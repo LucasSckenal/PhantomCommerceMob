@@ -1,0 +1,318 @@
+// ProfilePage.scss
+
+.profile-page {
+  --background: var(--ion-background-color, #0F1424);
+
+  .profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    margin-bottom: 60px;
+  }
+}
+
+
+// Cards com design moderno
+.profile-info-card {
+  margin: 16px;
+  border-radius: 16px;
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  ion-card-header {
+    padding: 20px 20px 8px;
+
+    ion-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+  }
+
+  ion-card-content {
+    padding: 8px 20px 20px;
+  }
+
+  .info-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --min-height: 48px;
+    --background: transparent;
+    border-bottom: 1px solid var(--ion-border-color);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    ion-icon {
+      color: var(--ion-color-primary);
+      margin-right: 12px;
+      font-size: 1.2rem;
+    }
+
+    ion-label {
+      h3 {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 4px;
+        color: var(--ion-text-color);
+      }
+
+      p {
+        font-size: 0.8rem;
+        color: var(--ion-color-medium);
+        margin: 0;
+      }
+    }
+  }
+}
+
+// Lista de opções estilizada
+.profile-options-list {
+  margin: 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  ion-item {
+    --padding-start: 20px;
+    --padding-end: 20px;
+    --min-height: 56px;
+    --background: var(--ion-card-background);
+    --border-color: var(--ion-border-color);
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--ion-border-color);
+    }
+
+    ion-icon {
+      color: var(--ion-color-primary);
+      margin-right: 12px;
+      font-size: 1.2rem;
+    }
+
+    ion-label {
+      font-weight: 500;
+      color: var(--ion-text-color);
+    }
+
+    &::part(native) {
+      background: var(--ion-card-background);
+      transition: all 0.2s ease;
+    }
+
+    &:hover::part(native) {
+      background: var(--ion-color-step-100);
+    }
+
+    &:active::part(native) {
+      background: var(--ion-color-step-150);
+    }
+  }
+}
+
+// Seção de logout
+.logout-section {
+  padding: 20px 16px;
+
+  ion-button {
+    --border-radius: 12px;
+    --box-shadow: 0 2px 8px rgba(224, 62, 62, 0.3);
+    --background: transparent;
+    --border-color: var(--ion-color-danger);
+    --color: var(--ion-color-danger);
+
+    &:hover {
+      --background: rgba(224, 62, 62, 0.1);
+    }
+
+    ion-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Estados de verificação de email
+.email-verified {
+  color: var(--ion-color-success);
+  font-weight: 600;
+
+  &::before {
+    content: "✓ ";
+  }
+}
+
+.email-not-verified {
+  color: var(--ion-color-warning);
+  font-weight: 600;
+
+  &::before {
+    content: "⚠ ";
+  }
+}
+
+// Badge para provedor de autenticação
+.auth-provider-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  color: white;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  box-shadow: 0 2px 6px rgba(77, 124, 255, 0.3);
+}
+
+// User ID com estilo de código
+.user-id {
+  background: var(--ion-background-color);
+  border: 1px solid var(--ion-border-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: var(--ion-color-medium);
+  word-break: break-all;
+  margin-top: 4px;
+}
+
+// Loading states
+.profile-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  flex-direction: column;
+
+  ion-spinner {
+    margin-bottom: 16px;
+    --color: var(--ion-color-primary);
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+// Estados vazios/erro
+.profile-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+
+  ion-icon {
+    font-size: 80px;
+    color: var(--ion-color-medium);
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+
+  h2 {
+    color: var(--ion-text-color);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  ion-button {
+    --border-radius: 12px;
+  }
+}
+
+// Animações suaves
+.profile-card {
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Efeito de shimmer para loading
+.shimmer {
+  background: linear-gradient(90deg,
+      var(--ion-card-background) 0%,
+      var(--ion-color-step-150) 50%,
+      var(--ion-card-background) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// Responsividade aprimorada
+@media (min-width: 768px) {
+  .profile-page {
+    .profile-container {
+      padding: 20px;
+    }
+
+    .profile-info-card,
+    .profile-options-list {
+      margin: 16px 0;
+    }
+  }
+}
+
+// Melhorias para acessibilidade
+@media (prefers-reduced-motion: reduce) {
+  .profile-card {
+    animation: none;
+  }
+
+  .shimmer {
+    animation: none;
+    background: var(--ion-color-step-150);
+  }
+}
+
+// Estados de foco para acessibilidade
+ion-item:focus-within {
+  --background: var(--ion-color-step-150);
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -2px;
+}
+
+// Scroll personalizado
+ion-content::part(scroll) {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--ion-background-color);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--ion-border-color);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--ion-color-medium);
+  }
+}

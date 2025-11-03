@@ -1,3 +1,4 @@
+// Tabs.tsx
 import {
   IonTabs,
   IonRouterOutlet,
@@ -6,7 +7,7 @@ import {
   IonIcon,
   IonLabel,
 } from "@ionic/react";
-import { Route, Redirect, useHistory } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 import { home, cart, person, grid } from "ionicons/icons";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -24,20 +25,56 @@ import ProfilePage from "../pages/ProfilePage";
 import "../theme/custom-tabs.css";
 
 const Tabs: React.FC = () => {
-  const history = useHistory();
-  const { user } = useAuth(); // pega o usuário autenticado
+   const { currentUser, loading } = useAuth();
+  console.log("Tabs - currentUser:", currentUser);
+  console.log("Tabs - loading:", loading);
+  // Se ainda está carregando, mostra tabs básicas
+  if (loading) {
+    return (
+      <IonTabs>
+        <IonRouterOutlet>
+          <Route exact path="/home" component={HomePage} />
+          <Route exact path="/category" component={CategoryPage} />
+          <Route exact path="/cart" component={CartPage} />
+          <Route exact path="/auth/login" component={LoginPage} />
+          <Redirect exact from="/" to="/home" />
+        </IonRouterOutlet>
 
-  const handleProfileClick = () => {
-    if (user) {
-      history.push("/profile"); // usuário logado → perfil
-    } else {
-      history.push("/auth/login"); // não logado → login
-    }
-  };
+        <IonTabBar slot="bottom" className="custom-tabbar">
+          <IonTabButton tab="home" href="/home">
+            <div className="tab-inner">
+              <IonIcon icon={home} />
+              <IonLabel>Home</IonLabel>
+            </div>
+          </IonTabButton>
+
+          <IonTabButton tab="category" href="/category">
+            <div className="tab-inner">
+              <IonIcon icon={grid} />
+              <IonLabel>Categorias</IonLabel>
+            </div>
+          </IonTabButton>
+
+          <IonTabButton tab="cart" href="/cart">
+            <div className="tab-inner">
+              <IonIcon icon={cart} />
+              <IonLabel>Carrinho</IonLabel>
+            </div>
+          </IonTabButton>
+
+          <IonTabButton tab="profile" href="/auth/login">
+            <div className="tab-inner">
+              <IonIcon icon={person} />
+              <IonLabel>Perfil</IonLabel>
+            </div>
+          </IonTabButton>
+        </IonTabBar>
+      </IonTabs>
+    );
+  }
 
   return (
     <IonTabs>
-      {/* ÁREA DE CONTEÚDO */}
       <IonRouterOutlet>
         <Route exact path="/home" component={HomePage} />
         <Route exact path="/category" component={CategoryPage} />
@@ -52,9 +89,7 @@ const Tabs: React.FC = () => {
         <Redirect exact from="/" to="/home" />
       </IonRouterOutlet>
 
-      {/* BARRA DE ABA INFERIOR */}
       <IonTabBar slot="bottom" className="custom-tabbar">
-        {/* HOME */}
         <IonTabButton tab="home" href="/home">
           <div className="tab-inner">
             <IonIcon icon={home} />
@@ -62,7 +97,6 @@ const Tabs: React.FC = () => {
           </div>
         </IonTabButton>
 
-        {/* CATEGORIAS */}
         <IonTabButton tab="category" href="/category">
           <div className="tab-inner">
             <IonIcon icon={grid} />
@@ -70,7 +104,6 @@ const Tabs: React.FC = () => {
           </div>
         </IonTabButton>
 
-        {/* CARRINHO */}
         <IonTabButton tab="cart" href="/cart">
           <div className="tab-inner">
             <IonIcon icon={cart} />
@@ -78,8 +111,11 @@ const Tabs: React.FC = () => {
           </div>
         </IonTabButton>
 
-        {/* PERFIL */}
-        <IonTabButton tab="profile" onClick={handleProfileClick}>
+        {/* PERFIL - Agora usando currentUser */}
+        <IonTabButton 
+          tab="profile" 
+          href={currentUser ? "/profile" : "/auth/login"}
+        >
           <div className="tab-inner">
             <IonIcon icon={person} />
             <IonLabel>Perfil</IonLabel>
