@@ -1,64 +1,53 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
+// MUDANÇA: IonSlides e IonSlide foram REMOVIDOS
 import {
-  IonSlides,
-  IonSlide,
   IonButton,
   IonIcon,
   IonText,
 } from '@ionic/react';
+// MUDANÇA: Importando Swiper e módulos
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper as SwiperInstance } from 'swiper';
+import { SwiperOptions } from 'swiper/types';
+import { Pagination, Autoplay } from 'swiper/modules';  // MUDANÇA: Módulos do Swiper
+import 'swiper/css'; // MUDANÇA: CSS principal do Swiper
+import 'swiper/css/pagination'; // MUDANÇA: CSS de paginação
+import 'swiper/css/autoplay'; // MUDANÇA: CSS do autoplay
+
 import {
-  chevronBack,
-  chevronForward,
-  heartOutline,
+  arrowForward,
+  arrowBack,
   star,
-  calendarOutline,
+  logoPlaystation,
+  logoXbox,
+  logoSteam,
+  gameControllerOutline,
+  desktopOutline,
 } from 'ionicons/icons';
-import { FaPlaystation, FaXbox, FaSteam } from 'react-icons/fa';
-import { BsNintendoSwitch, BsPcDisplay } from 'react-icons/bs';
-import { useIonRouter } from '@ionic/react';
 
-// --- ÍCONES (copiado do seu page.jsx) ---
-const platformIcons: { [key: string]: React.ReactNode } = {
-  xbox: <FaXbox size={16} />,
-  playstation: <FaPlaystation size={16} />,
-  steam: <FaSteam size={16} />,
-  'nintendo switch': <BsNintendoSwitch size={15} />,
-  pc: <BsPcDisplay size={15} />,
-};
-
-// --- Função utilitária (copiado do seu page.jsx) ---
-const formatReleaseDate = (dateStr: string | undefined) => {
-  if (!dateStr) return 'TBA';
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return dateStr;
-  return date.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-};
-
-// --- Estilos CSS-in-JS (traduzido do seu Home.module.scss) ---
-// Vamos injetar esses estilos dinamicamente
-const getStyle = () => `
-  .hero-slides {
+// --- Estilos CSS-in-JS (Traduzido do seu Home.module.scss) ---
+const style = `
+  /* MUDANÇA: O IonSlides precisa de altura definida */
+  .heroSlider {
     height: 65vh;
     min-height: 500px;
-    border-radius: 16px;
+    border-radius: var(--br-16, 16px);
     overflow: hidden;
-    position: relative;
   }
 
-  .hero-slide {
-    width: 100%;
+  .heroSlide {
     height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
     background-size: cover;
     background-position: center 30%;
+    padding: 2rem 3rem;
+    color: var(--ion-text-color-contrast, #fff);
     position: relative;
-    color: var(--ion-text-color, #fff);
   }
 
-  .hero-overlay {
+  .heroOverlay {
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -67,315 +56,281 @@ const getStyle = () => `
     background-color: rgba(15, 20, 36, 0.4);
   }
 
-  .hero-content {
+  .heroContent {
     position: relative;
     z-index: 2;
-    max-width: 90%;
+    max-width: 45%;
     display: flex;
     flex-direction: column;
-    gap: 1rem; /* Reduzido para mobile */
-    padding: 2rem;
+    gap: 1.25rem;
+    padding-left: 3rem;
     text-align: left;
-    align-items: flex-start; /* Alinha à esquerda */
   }
 
-  /* Em telas maiores, recria o layout do Next.js */
-  @media (min-width: 768px) {
-    .hero-content {
-      max-width: 50%;
-      padding-left: 5rem;
-      gap: 1.25rem;
-    }
-  }
-
-  .hero-title {
-    font-size: 2.5rem; /* Ajustado */
+  .heroTitle {
+    font-size: 3.5rem;
     font-weight: 700;
     line-height: 1.1;
     text-shadow: 0 2px 10px rgba(0,0,0,0.5);
   }
 
-  .hero-subtitle {
-    font-size: 1.1rem;
-    font-weight: bold;
-  }
+  .heroSubtitle { font-size: 1.2rem; font-weight: bold; }
+  .heroDescription { font-size: 0.95rem; line-height: 1.6; max-width: 480px; }
 
-  .hero-description {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    max-width: 480px;
-    display: none; /* Escondido em telas pequenas */
-  }
-
-  @media (min-width: 768px) {
-    .hero-description {
-      display: block; /* Mostra em telas maiores */
-    }
-    .hero-title {
-      font-size: 3.5rem;
-    }
-  }
-
-  .hero-info-bar {
+  .heroInfoBar {
     display: flex;
     align-items: center;
-    gap: 1rem; /* Ajustado */
+    gap: 1.5rem;
     flex-wrap: wrap;
   }
-
-  .info-item, .platform-icons-hero {
+  
+  .infoItem, .platformIconsHero {
     display: flex;
     gap: 0.5rem;
     align-items: center;
     background-color: rgba(15, 20, 36, 0.7);
-    padding: 0.4rem 0.6rem;
-    border-radius: 16px;
+    padding: 0.4rem 0.8rem; /* Aumentado o padding horizontal */
+    border-radius: 16px; /* var(--br-16) */
     font-size: 0.9rem;
   }
-
-  .info-item ion-icon {
-    color: var(--ion-color-primary, #4D7CFF);
+  .infoItem ion-icon { 
+    color: var(--ion-color-primary, #4D7CFF); 
+    font-size: 16px;
+  }
+  .platformIconsHero ion-icon {
+    font-size: 16px;
   }
 
-  .hero-price-section {
-    font-size: 2.2rem;
-    font-weight: 700;
-  }
-
-  .hero-actions {
-    display: flex;
-    gap: 1rem; /* Ajustado */
+  .heroPriceSection {
     margin-top: 0.5rem;
-    flex-wrap: wrap; /* Permite que botões quebrem a linha */
+  }
+  .currentPrice { font-size: 2.2rem; font-weight: 700; }
+
+  .heroActions {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
   }
 
-  /* Botões de navegação */
-  .hero-nav-arrow {
+  /* MUDANÇA: Estilizando IonButton */
+  .heroButtonPrimary {
+    --background: var(--ion-color-primary, #2D5BFF);
+    --background-hover: var(--ion-color-primary-shade, #2951e0);
+    --color: var(--ion-text-color-contrast, #fff);
+    --border-radius: 8px; /* var(--br-8) */
+    --padding-start: 2.5rem;
+    --padding-end: 2.5rem;
+    --padding-top: 0.9rem;
+    --padding-bottom: 0.9rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: none;
+  }
+
+  .heroButtonSecondary {
+    --background: rgba(15, 20, 36, 0.8);
+    --color: var(--ion-text-color-contrast, #fff);
+    --border-color: var(--ion-color-primary, #4D7CFF);
+    --border-width: 1px;
+    --border-style: solid;
+    --border-radius: 8px;
+    --padding-start: 1.5rem;
+    --padding-end: 1.5rem;
+    --padding-top: 0.8rem;
+    --padding-bottom: 0.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: none;
+  }
+  .heroButtonSecondary:hover {
+    --color: var(--ion-color-primary, #4D7CFF);
+  }
+
+  /* MUDANÇA: Botões de navegação */
+  .heroNavArrow {
     position: absolute;
     z-index: 10;
     top: 50%;
     transform: translateY(-50%);
     --background: rgba(26, 32, 44, 0.5);
-    --background-hover: rgba(77, 124, 255, 0.8);
+    --background-hover: var(--ion-color-primary-shade, #2951e0);
     --border-color: var(--ion-color-primary, #4D7CFF);
     --border-width: 1px;
     --border-style: solid;
-    --color: var(--ion-text-color, #fff);
+    --color: #fff;
     --border-radius: 50%;
+    width: 48px;
+    height: 48px;
     backdrop-filter: blur(4px);
-    display: none; /* Escondido em telas pequenas */
   }
+  .heroNavArrow.left { left: 2rem; }
+  .heroNavArrow.right { right: 2rem; }
 
-  @media (min-width: 768px) {
-    .hero-nav-arrow {
-      display: block; /* Mostra em telas maiores */
-    }
+  /* MUDANÇA: Estilizando a paginação do Swiper */
+  .heroSlider .swiper-pagination {
+    bottom: 2rem !important; /* Força a posição */
   }
-
-  .nav-left { left: 2rem; }
-  .nav-right { right: 2rem; }
-
-  /* Indicadores */
-  .hero-indicators {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 0.75rem;
-    z-index: 2;
-  }
-
-  .indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: var(--ion-color-step-300, #ccc);
-    cursor: pointer;
+  .heroSlider .swiper-pagination-bullet {
+    background: var(--ion-color-light, #f4f5f8);
     opacity: 0.7;
   }
-
-  .indicator-active {
-    background-color: var(--ion-color-primary, #4D7CFF);
+  .heroSlider .swiper-pagination-bullet-active {
+    background: var(--ion-color-primary, #4D7CFF);
     opacity: 1;
   }
 `;
 
-// Opções do IonSlides
-const slideOpts = {
-  speed: 600,
-  autoplay: {
-    delay: 7000,
-  },
-  loop: true,
-  slidesPerView: 1,
+// MUDANÇA: Mapeamento de ícones para Ionic
+const platformIcons: { [key: string]: string } = {
+  xbox: logoXbox,
+  playstation: logoPlaystation,
+  steam: logoSteam,
+  'nintendo switch': gameControllerOutline,
+  pc: desktopOutline,
 };
 
-// Props do componente
-interface HeroSectionProps {
-  heroGames: any[]; // Use um tipo mais específico se tiver (ex: Game[])
-}
+// Define a ordem de exibição desejada para as plataformas
+const platformOrder = ['pc', 'playstation', 'xbox', 'nintendo switch', 'steam'];
 
-const HeroSection: React.FC<HeroSectionProps> = ({ heroGames }) => {
-  const router = useIonRouter();
-  const slidesRef = useRef<HTMLIonSlidesElement>(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [styleInjected, setStyleInjected] = useState(false);
+// Dados mocados (substitua pelos seus dados reais)
+const mockHeroData = [
+  {
+    id: '1',
+    title: 'Cyberpunk 2077',
+    subtitle: 'Phantom Liberty',
+    description: 'Uma expansão de suspense e espionagem para Cyberpunk 2077. Volte como V e embarque em uma missão de alto risco.',
+    rating: 4.8,
+    platforms: ['PC', 'PlayStation', 'Xbox'],
+    price: 'R$ 149,90',
+    backgroundImage: 'https://images.gog-statics.com/b2654516a512d5d2b37060b2d6c13bdc26f634b0718d002fbe3a6c06a8f158c5_background_1920.jpg',
+    productUrl: '/product/1'
+  },
+  {
+    id: '2',
+    title: 'Starfield',
+    subtitle: 'Aventura Espacial',
+    description: 'Starfield é o primeiro novo universo em 25 anos da Bethesda Game Studios, os criadores de The Elder Scrolls V: Skyrim e Fallout 4.',
+    rating: 4.5,
+    platforms: ['PC', 'Xbox'],
+    price: 'R$ 299,00',
+    backgroundImage: 'https://images.gog-statics.com/6a033a2a6320a568a15990f1d56740a6b7eaa40d21c33c37d6d1d4f295b9c71b_background_1920.jpg',
+    productUrl: '/product/2'
+  },
+  // Adicione mais slides
+];
 
-  // Injeta os estilos no <head> uma única vez
-  useEffect(() => {
-    const styleElement = document.createElement('style');
-    styleElement.innerHTML = getStyle();
-    document.head.appendChild(styleElement);
-    setStyleInjected(true);
+const HomeHeroSlider: React.FC = () => {
+  const slidesRef = useRef<SwiperInstance | null>(null);
 
-    return () => {
-      // Limpa os estilos quando o componente é desmontado
-      document.head.removeChild(styleElement);
-    };
-  }, []);
+  // MUDANÇA: Opções do Swiper (não mais necessárias como um objeto separado)
+  // const swiperOptions: SwiperOptions = { ... };
 
-  if (!styleInjected) {
-    return null; // Não renderiza nada até os estilos serem injetados
-  }
+  const handlePrev = () => slidesRef.current?.slidePrev();
+  const handleNext = () => slidesRef.current?.slideNext();
 
-  const handleSlideChange = async () => {
-    const index = await slidesRef.current?.getActiveIndex();
-    const totalSlides = heroGames.length;
-    if (index !== undefined) {
-      // O IonSlides com loop adiciona slides extras, precisamos normalizar o índice
-      setCurrentSlide(index % totalSlides);
-    }
+  const sortedPlatforms = (platforms: string[] = []) => {
+    return [...platforms].sort((a, b) => {
+      const platformA = a.toLowerCase();
+      const platformB = b.toLowerCase();
+      const indexA = platformOrder.indexOf(platformA);
+      const indexB = platformOrder.indexOf(platformB);
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
   };
-
-  const handleNav = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      slidesRef.current?.slidePrev();
-    } else {
-      slidesRef.current?.slideNext();
-    }
-  };
-
-  const handleIndicatorClick = (index: number) => {
-    slidesRef.current?.slideTo(index);
-  };
-
-  // MUDANÇA: Link (router.push) em vez de <Link>
-  const goToProduct = (id: string) => {
-    router.push(`/product/${id}`);
-  };
-
-  if (!heroGames || heroGames.length === 0) {
-    return null; // Não renderiza nada se não houver jogos
-  }
 
   return (
-    <>
-      <IonSlides
-        ref={slidesRef}
-        options={slideOpts}
-        onIonSlideDidChange={handleSlideChange}
-        pager={false} // Desativamos o pager padrão para usar o nosso
-        className="hero-slides"
+    <div style={{ position: 'relative' }}>
+      <style>{style}</style>
+      {/* MUDANÇA: Substituído IonSlides por Swiper */}
+      <Swiper
+        className="heroSlider"
+        modules={[Pagination, Autoplay]} // MUDANÇA: Passando módulos
+        autoplay={{
+          delay: 7000,
+          disableOnInteraction: false,
+        }}
+        loop={true}
+        pagination={{
+          clickable: true,
+        }}
+        onSwiper={(swiper) => { // MUDANÇA: onIonSlidesDidLoad -> onSwiper
+          slidesRef.current = swiper;
+        }}
       >
-        {heroGames.map((game) => (
-          <IonSlide
+        {mockHeroData.map((game) => (
+          // MUDANÇA: Substituído IonSlide por SwiperSlide
+          <SwiperSlide
             key={game.id}
-            className="hero-slide"
-            style={{
-              backgroundImage: `url(${
-                game.headerImageUrl || game.coverImageUrl || '/placeholder.jpg'
-              })`,
-            }}
+            className="heroSlide"
+            style={{ backgroundImage: `url(${game.backgroundImage})` }}
           >
-            <div className="hero-overlay"></div>
-            <div className="hero-content">
-              <IonText>
-                <h1 className="hero-title">{game.title}</h1>
-              </IonText>
-              <IonText>
-                <h2 className="hero-subtitle">
-                  {game.shortDescription || 'Confira agora este sucesso!'}
-                </h2>
-              </IonText>
-              <p className="hero-description">
-                {(game.about || game.description || 'Um dos jogos...').substring(
-                  0,
-                  200
-                )}
-                ...
-              </p>
-              <div className="hero-info-bar">
-                <div className="info-item">
+            <div className="heroOverlay"></div>
+            <div className="heroContent">
+              <h2 className="heroTitle">{game.title}</h2>
+              <h3 className="heroSubtitle">{game.subtitle}</h3>
+              <p className="heroDescription">{game.description}</p>
+              
+              <div className="heroInfoBar">
+                <div className="infoItem">
                   <IonIcon icon={star} />
-                  <span>{game.rating} estrelas</span>
+                  <span>{game.rating}</span>
                 </div>
-                <div className="info-item">
-                  <IonIcon icon={calendarOutline} />
-                  <span>Lançamento: {formatReleaseDate(game.releaseDate)}</span>
-                </div>
-                <div className="platform-icons-hero">
-                  {game.platforms?.map((platform: string) => (
-                    <span key={platform} title={platform}>
-                      {platformIcons[platform.toLowerCase()] ||
-                        platformIcons.pc}
-                    </span>
+                <div className="platformIconsHero">
+                  {sortedPlatforms(game.platforms).map((platform) => (
+                    <IonIcon
+                      key={platform}
+                      icon={platformIcons[platform.toLowerCase()] || desktopOutline}
+                      title={platform}
+                    />
                   ))}
                 </div>
               </div>
-              <div className="hero-price-section">
-                <span>
-                  R${' '}
-                  {(game.discountedPrice || game.price).toFixed(2).replace('.', ',')}
-                </span>
+
+              <div className="heroPriceSection">
+                <IonText><h4 className="currentPrice">{game.price}</h4></IonText>
               </div>
-              <div className="hero-actions">
-                <IonButton onClick={() => goToProduct(game.id)}>
-                  Ver jogo
+
+              <div className="heroActions">
+                <IonButton 
+                  className="heroButtonPrimary" 
+                  routerLink={game.productUrl}
+                >
+                  <IonIcon slot="start" icon={arrowForward} />
+                  Ver Jogo
                 </IonButton>
-                <IonButton fill="outline" color="light">
-                  <IonIcon slot="start" icon={heartOutline} />
-                  Favoritos
+                <IonButton 
+                  className="heroButtonSecondary"
+                  fill="outline"
+                >
+                  Mais Detalhes
                 </IonButton>
               </div>
             </div>
-          </IonSlide>
+          </SwiperSlide>
         ))}
-      </IonSlides>
+      </Swiper>
 
-      {/* Navegação Customizada (Setas) */}
+      {/* Botões de Navegação Externos */}
       <IonButton
+        className="heroNavArrow left"
         fill="clear"
-        className="hero-nav-arrow nav-left"
-        onClick={() => handleNav('prev')}
-        aria-label="Slide Anterior"
+        onClick={handlePrev}
       >
-        <IonIcon icon={chevronBack} slot="icon-only" />
+        <IonIcon slot="icon-only" icon={arrowBack} />
       </IonButton>
       <IonButton
+        className="heroNavArrow right"
         fill="clear"
-        className="hero-nav-arrow nav-right"
-        onClick={() => handleNav('next')}
-        aria-label="Próximo Slide"
+        onClick={handleNext}
       >
-        <IonIcon icon={chevronForward} slot="icon-only" />
+        <IonIcon slot="icon-only" icon={arrowForward} />
       </IonButton>
-
-      {/* Indicadores Customizados */}
-      <div className="hero-indicators">
-        {heroGames.map((_, index) => (
-          <span
-            key={index}
-            className={`indicator ${
-              currentSlide === index ? 'indicator-active' : ''
-            }`}
-            onClick={() => handleIndicatorClick(index)}
-          ></span>
-        ))}
-      </div>
-    </>
+    </div>
   );
 };
 
-export default HeroSection;
+export default HomeHeroSlider;
+
 

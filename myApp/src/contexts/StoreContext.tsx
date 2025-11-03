@@ -1,28 +1,67 @@
-// MUDANÇA: "use client" removido
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
+// MUDANÇA: db foi removido, agora usamos a instância do firebase.ts
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs } from "firebase/firestore";
 
-const StoreContext = createContext<any>(undefined);
-
-// Tipagem básica para as props
-interface StoreProviderProps {
-  children: React.ReactNode;
-  slug: string;
-  initialFilters: {
-    sortOrder: string;
-    selectedTags: string[];
-    selectedPlatforms: string[];
-    priceRange: { min: string; max: string };
-  };
+// --- Tipagem ---
+interface PriceRange {
+  min: string | number;
+  max: string | number;
 }
 
-export function StoreProvider({ children, slug, initialFilters }: StoreProviderProps) {
+interface InitialFilters {
+  sortOrder: string;
+  selectedTags: string[];
+  selectedPlatforms: string[];
+  priceRange: PriceRange;
+}
+
+interface StoreContextProps {
+  games: any[]; // Defina um tipo melhor se tiver
+  loadingGames: boolean;
+  allAvailableTags: string[];
+  allAvailablePlatforms: string[];
+  sortOrder: string;
+  setSortOrder: (order: string) => void;
+  selectedTags: string[];
+  setSelectedTags: (tags: string[]) => void;
+  selectedPlatforms: string[];
+  setSelectedPlatforms: (platforms: string[]) => void;
+  priceRange: PriceRange;
+  setPriceRange: (range: PriceRange) => void;
+  filteredAndSortedGames: any[];
+  clearFilters: () => void;
+}
+
+interface StoreProviderProps {
+  children: ReactNode;
+  slug?: string; // Slug é opcional no provider global
+  initialFilters?: InitialFilters; // Filtros iniciais são opcionais
+}
+
+// --- Valores Padrão ---
+// MUDANÇA: Definimos valores padrão para o caso de initialFilters não ser passado
+const DEFAULT_FILTERS: InitialFilters = {
+  sortOrder: 'rating',
+  selectedTags: [],
+  selectedPlatforms: [],
+  priceRange: { min: '', max: '' }
+};
+
+const StoreContext = createContext<StoreContextProps | undefined>(undefined);
+
+export function StoreProvider({ 
+  children, 
+  slug = 'all', // MUDANÇA: Valor padrão para slug
+  initialFilters = DEFAULT_FILTERS // MUDANÇA: Valor padrão para filtros
+}: StoreProviderProps) {
+  
     const [games, setGames] = useState<any[]>([]);
     const [loadingGames, setLoadingGames] = useState(true);
     const [allAvailableTags, setAllAvailableTags] = useState<string[]>([]);
     const [allAvailablePlatforms, setAllAvailablePlatforms] = useState<string[]>([]);
 
+    // MUDANÇA: Usamos os valores de initialFilters (ou o padrão)
     const [sortOrder, setSortOrder] = useState(initialFilters.sortOrder);
     const [selectedTags, setSelectedTags] = useState(initialFilters.selectedTags);
     const [selectedPlatforms, setSelectedPlatforms] = useState(initialFilters.selectedPlatforms);
@@ -30,13 +69,13 @@ export function StoreProvider({ children, slug, initialFilters }: StoreProviderP
 
     const capitalize = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 
-    // NENHUMA MUDANÇA DE LÓGICA AQUI
+    // Efeito para buscar os jogos (semelhante ao original)
     useEffect(() => {
         const fetchGames = async () => {
             setLoadingGames(true);
             try {
                 let gamesCollectionRef = collection(db, 'games');
-                let gamesQuery: any = gamesCollectionRef; // Usando 'any' para query dinâmica
+                let gamesQuery: any = gamesCollectionRef; // Tipo 'any' para flexibilidade na query
 
                 const isAllCategory = slug.toLowerCase() === 'all';
                 const baseTagFromSlug = isAllCategory ? '' : capitalize(decodeURIComponent(slug));
@@ -44,11 +83,11 @@ export function StoreProvider({ children, slug, initialFilters }: StoreProviderP
                 if (baseTagFromSlug) {
                     gamesQuery = query(gamesQuery, where('categories', 'array-contains', baseTagFromSlug));
                 }
-                const minPriceVal = parseFloat(priceRange.min);
+                const minPriceVal = parseFloat(String(priceRange.min));
                 if (!isNaN(minPriceVal) && minPriceVal > 0) {
                     gamesQuery = query(gamesQuery, where('price', '>=', minPriceVal));
                 }
-                const maxPriceVal = parseFloat(priceRange.max);
+                const maxPriceVal = parseFloat(String(priceRange.max));
                 if (!isNaN(maxPriceVal) && maxPriceVal > 0) {
                     gamesQuery = query(gamesQuery, where('price', '<=', maxPriceVal));
                 }
@@ -75,7 +114,7 @@ export function StoreProvider({ children, slug, initialFilters }: StoreProviderP
         fetchGames();
     }, [slug, priceRange.min, priceRange.max]);
 
-    // NENHUMA MUDANÇA DE LÓGICA AQUI
+    // Efeito para extrair tags e plataformas
     useEffect(() => {
         const uniqueTags = new Set<string>();
         const uniquePlatforms = new Set<string>();
@@ -87,21 +126,22 @@ export function StoreProvider({ children, slug, initialFilters }: StoreProviderP
         setAllAvailablePlatforms(Array.from(uniquePlatforms).sort());
     }, [games]);
 
-    // NENHUMA MUDANÇA DE LÓGICA AQUI
+    // Lógica de filtragem e ordenação (semelhante ao original)
     const filteredAndSortedGames = useMemo(() => {
         let gamesToFilter = [...games];
         const isAllCategory = slug.toLowerCase() === 'all';
         const baseTagLower = isAllCategory ? '' : decodeURIComponent(slug).toLowerCase();
         
-        const effectiveSelectedTags = selectedTags.filter(t => t !== baseTagLower);
+        const effectiveSelectedTags = selectedTags.filter(t => t.toLowerCase() !== baseTagLower);
+        
         if (effectiveSelectedTags.length > 0) {
             gamesToFilter = gamesToFilter.filter(game =>
-                effectiveSelectedTags.every(st => game.tags.map((t: string) => t.toLowerCase()).includes(st))
+                effectiveSelectedTags.every(st => game.tags.map((t: string) => t.toLowerCase()).includes(st.toLowerCase()))
             );
         }
         if (selectedPlatforms.length > 0) {
             gamesToFilter = gamesToFilter.filter(game =>
-                selectedPlatforms.every(sp => game.platforms.includes(sp))
+                selectedPlatforms.every(sp => game.platforms.includes(sp.toLowerCase()))
             );
         }
 
@@ -116,7 +156,7 @@ export function StoreProvider({ children, slug, initialFilters }: StoreProviderP
         });
     }, [games, selectedTags, selectedPlatforms, sortOrder, slug]);
 
-    // NENHUMA MUDANÇA DE LÓGICA AQUI
+    // Limpar filtros (semelhante ao original)
     const clearFilters = useCallback(() => {
         const baseTags = slug.toLowerCase() === 'all' ? [] : [decodeURIComponent(slug).toLowerCase()];
         setSelectedTags(baseTags);
@@ -125,7 +165,7 @@ export function StoreProvider({ children, slug, initialFilters }: StoreProviderP
         setSortOrder('rating');
     }, [slug]);
 
-    const value = {
+    const value: StoreContextProps = {
         games,
         loadingGames,
         allAvailableTags,
@@ -152,7 +192,8 @@ export function StoreProvider({ children, slug, initialFilters }: StoreProviderP
 export function useStore() {
     const context = useContext(StoreContext);
     if (context === undefined) {
-        throw new Error('useStore must be used within a StoreProvider');
+        throw new Error('useStore deve ser usado dentro de um StoreProvider');
     }
     return context;
 }
+
