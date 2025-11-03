@@ -1,0 +1,303 @@
+.product-hero {
+ position: relative;
+ min-height: 100vh;
+
+ .hero-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40vh;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+ }
+
+ .hero-content {
+  position: relative;
+  z-index: 1;
+  padding-top: 30vh;
+ }
+
+ .game-info-section {
+  padding: 16px;
+
+  .game-title {
+   font-size: 1.8rem;
+   font-weight: 700;
+   margin: 0 0 16px 0;
+   color: var(--ion-color-light);
+   line-height: 1.2;
+  }
+
+  .game-meta {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 8px;
+   margin-bottom: 20px;
+
+   ion-chip {
+    margin: 0;
+   }
+
+   .platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+   }
+  }
+
+  .price-section {
+   margin-bottom: 24px;
+
+   .current-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ion-color-primary);
+    margin-right: 12px;
+   }
+
+   .original-price {
+    font-size: 1.2rem;
+    color: var(--ion-color-medium);
+    text-decoration: line-through;
+    margin-right: 12px;
+   }
+
+   .discount-badge {
+    font-weight: 600;
+   }
+  }
+
+  .action-buttons {
+   display: flex;
+   flex-direction: column;
+   gap: 12px;
+
+   .buy-button {
+    --border-radius: 12px;
+    height: 50px;
+    font-weight: 600;
+   }
+
+   .wishlist-button {
+    --border-radius: 12px;
+    height: 50px;
+    font-weight: 600;
+   }
+  }
+ }
+
+ .media-section {
+  padding: 16px;
+
+  .main-media-card {
+   background: var(--ion-card-background);
+   border-radius: 16px;
+   margin-bottom: 16px;
+
+   .main-media {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+
+    .main-image {
+     width: 100%;
+     height: 200px;
+     object-fit: cover;
+     display: block;
+    }
+
+    .play-overlay {
+     position: absolute;
+     top: 0;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     background: rgba(0, 0, 0, 0.6);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     color: white;
+
+     ion-icon {
+      font-size: 3rem;
+     }
+    }
+   }
+  }
+
+  .thumbnail-gallery {
+   display: flex;
+   justify-content: center;
+   gap: 8px;
+   overflow-x: auto;
+   padding: 8px 0;
+   margin-bottom: 16px;
+
+   &::-webkit-scrollbar {
+    display: none;
+   }
+
+   .thumbnail {
+    flex: 0 0 auto;
+    width: 80px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s ease;
+
+    &.active {
+     border-color: var(--ion-color-primary);
+    }
+
+    img {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+    }
+
+    .video-indicator {
+     position: absolute;
+     top: 0;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     background: rgba(0, 0, 0, 0.4);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     color: white;
+
+     ion-icon {
+      font-size: 1.2rem;
+     }
+    }
+   }
+  }
+
+  .requirements-card {
+   background: var(--ion-card-background);
+   border-radius: 16px;
+
+   h3 {
+    margin: 0 0 16px 0;
+    color: var(--ion-color-light);
+    font-size: 1.1rem;
+   }
+
+   .requirements-grid {
+    display: grid;
+    gap: 16px;
+
+    .requirement-section {
+     h4 {
+      margin: 0 0 8px 0;
+      color: var(--ion-color-primary);
+      font-size: 0.9rem;
+      font-weight: 600;
+     }
+
+     ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      li {
+       padding: 4px 0;
+       color: var(--ion-color-medium);
+       font-size: 0.8rem;
+       line-height: 1.4;
+
+       strong {
+        color: var(--ion-color-light);
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+
+ .video-container {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; // 16:9 aspect ratio
+  background: #000;
+
+  iframe {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   border: none;
+  }
+ }
+}
+
+// Tablet and Desktop
+@media (min-width: 768px) {
+ .product-hero {
+  .hero-banner {
+   height: 50vh;
+  }
+
+  .hero-content {
+   padding-top: 35vh;
+  }
+
+  .game-info-section {
+   .game-title {
+    font-size: 2.5rem;
+   }
+
+   .action-buttons {
+    flex-direction: row;
+
+    .buy-button,
+    .wishlist-button {
+     flex: 1;
+    }
+   }
+  }
+
+  .media-section {
+   .main-media-card {
+    .main-media {
+     .main-image {
+      height: 300px;
+     }
+    }
+   }
+
+   .thumbnail-gallery {
+    .thumbnail {
+     width: 100px;
+     height: 75px;
+    }
+   }
+
+   .requirements-card {
+    .requirements-grid {
+     grid-template-columns: 1fr 1fr;
+    }
+   }
+  }
+ }
+}
+
+// Dark mode adjustments
+@media (prefers-color-scheme: dark) {
+ .product-hero {
+  .game-info-section {
+   .game-title {
+    color: var(--ion-text-color);
+   }
+  }
+ }
+}
