@@ -7,15 +7,20 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  IonButton,
+  IonCard,
+  IonCardContent,
+  IonIcon,
 } from '@ionic/react';
+// MUDANÇA: Adicionando ícones para a seção de estatísticas
+import { barChartOutline, peopleOutline, ribbonOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 import { useStore } from '../contexts/StoreContext';
-import Header from '../components/Header'; // O cabeçalho que acabamos de criar
-import HeroSection from '../components/HomeHeroSlider'; // O carrossel que criamos
-import SectionHeader from '../components/SectionHeader'; // O título de seção
-import HorizontalGameScroll from '../components/HorizontalGameScroll'; // O scroll horizontal
-// import GameCard from '../components/GameCard'; // TODO: Você precisará criar este
-// import BestSellersGrid from '../components/BestSellersGrid'; // TODO: Você precisará criar este
+import Header from '../components/Header';
+import HomeHeroSlider from '../components/HomeHeroSlider'; // Renomeado de HeroSection
+import SectionHeader from '../components/SectionHeader';
+import HorizontalGameScroll from '../components/HorizontalGameScroll';
+// MUDANÇA: Importando os novos componentes
+import BestSellersGrid from '../components/BestSellersGrid';
+import GenresGrid from '../components/GenresGrid';
 
 // Estilos específicos para esta página
 const style = `
@@ -34,42 +39,66 @@ const style = `
   }
 
   .section {
-    margin-bottom: 3rem; /* Reduzido de 5rem para mobile */
+    margin-bottom: 3rem;
   }
 
-  /* TODO: Mover para um arquivo .css global se usado em mais lugares */
-  .genres-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
-  }
-
-  .genre-button {
+  /* MUDANÇA: Estilos para a nova Seção de Liderança (Stats) */
+  .leadershipSection {
     --background: var(--ion-card-background, #1A202C);
-    --border-color: var(--ion-border-color, #4A5568);
-    --border-style: solid;
-    --border-width: 1px;
-    --color: var(--ion-text-color, #fff);
-    --border-radius: 16px;
-    --padding-top: 1.5rem;
-    --padding-bottom: 1.5rem;
-    height: 120px; /* Altura fixa */
+    --border-radius: var(--br-16, 16px);
+    border: 1px solid var(--ion-border-color, #4A5568);
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+
+  .leadershipContent h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--ion-text-color, #fff);
+    border-bottom: 3px solid var(--ion-color-primary, #4D7CFF);
+    padding-bottom: 0.5rem;
+    display: inline-block; /* Para a borda se ajustar ao texto */
+    margin: 0 auto 1rem auto;
+  }
+
+  .leadershipContent p {
+    color: var(--ion-color-medium, #718096);
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+  }
+
+  .statItem {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-decoration: none;
-    text-transform: none;
-    transition: all 0.3s ease;
+    background: var(--ion-color-step-150, #1F2736);
+    padding: 1.5rem 1rem;
+    border-radius: var(--br-16, 16px);
+    text-align: center;
+    border: 1px solid var(--ion-border-color, #4A5568);
+    height: 100%; /* Faz os cards terem a mesma altura */
+  }
+  
+  .statItem ion-icon {
+    font-size: 2rem; /* 28px */
+    color: var(--ion-color-primary, #4D7CFF);
+    margin-bottom: 0.5rem;
   }
 
-  .genre-button:hover {
-    --background: var(--ion-color-step-200, #39455e);
-    --border-color: var(--ion-color-primary, #4D7CFF);
-    --color: var(--ion-color-primary, #4D7CFF);
+  .statItem h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ion-text-color, #fff);
+    margin: 0.5rem 0;
+    padding-bottom: 0.25rem;
+    border-bottom: 2px solid var(--ion-color-primary, #4D7CFF);
+  }
+
+  .statItem p {
+    color: var(--ion-color-medium, #718096);
+    margin: 0;
+    font-size: 0.9rem;
   }
 `;
 
@@ -78,17 +107,19 @@ const HomePage: React.FC = () => {
   const { games, loadingGames } = useStore();
 
   // 2. Processar os dados (lógica copiada do seu page.jsx)
-  // useMemo garante que isso só seja recalculado quando os jogos mudarem
   const {
     heroGames,
     popularGames,
     promotions,
-    // bestSellers, // TODO: Descomente quando criar o grid de best sellers
-    // genres, // TODO: Descomente quando criar o grid de gêneros
+    bestSellers, // MUDANÇA: Descomentado
+    genres, // MUDANÇA: Descomentado
   } = useMemo(() => {
-    const bestRatedGames = [...games].sort((a: any, b: any) => (b.rating || 0) - (a.rating || 0));
+    // MUDANÇA: Adicionada verificação de segurança
+    const safeGames = games.filter(game => !!game);
 
-    const discountedGames = [...games]
+    const bestRatedGames = [...safeGames].sort((a: any, b: any) => (b.rating || 0) - (a.rating || 0));
+
+    const discountedGames = [...safeGames]
       .filter((game: any) => game.originalPrice && game.discountedPrice && game.originalPrice > game.discountedPrice)
       .map((game: any) => ({
         ...game,
@@ -98,9 +129,10 @@ const HomePage: React.FC = () => {
 
     const heroGames = bestRatedGames.slice(0, 3);
     const popularGames = bestRatedGames.slice(3, 11);
-    const bestSellers = bestRatedGames.slice(0, 4);
+    const bestSellers = bestRatedGames.slice(0, 4); // MUDANÇA: Agora é usado
     const promotions = discountedGames.slice(0, 5);
-    const genres = ["Ação", "Aventura", "RPG", "Estratégia", "Indie", "Esportes", "Corrida"];
+    // MUDANÇA: Agora é usado
+    const genres = ["Ação", "Aventura", "RPG", "Estratégia", "Indie", "Esportes", "Corrida"]; 
 
     return { heroGames, popularGames, bestSellers, promotions, genres };
   }, [games]);
@@ -109,7 +141,7 @@ const HomePage: React.FC = () => {
   return (
     <IonPage>
       <style>{style}</style>
-      <Header /> {/* O cabeçalho que criamos */}
+      <Header />
       
       <IonContent className="home-page-content" fullscreen>
         {loadingGames ? (
@@ -118,7 +150,8 @@ const HomePage: React.FC = () => {
           <>
             {/* 1. Hero Section (Carrossel) */}
             <div className="section">
-              <HeroSection heroGames={heroGames} />
+              {/* MUDANÇA: Prop 'games' está correta */}
+              <HomeHeroSlider games={heroGames} />
             </div>
 
             {/* 2. Populares da Semana */}
@@ -133,30 +166,61 @@ const HomePage: React.FC = () => {
               <HorizontalGameScroll games={promotions} />
             </div>
 
-            {/* 4. Mais Vendidos (TODO) */}
-            {/* <div className="section">
+            {/* 4. Mais Vendidos (MUDANÇA: Agora renderiza o componente) */}
+            <div className="section">
               <SectionHeader title="Mais Vendidos" viewMoreLink="/category/all?sort=sales" />
               <BestSellersGrid games={bestSellers} />
-            </div> 
-            */}
-            
-            {/* 5. Gêneros (TODO) */}
-            {/* <div className="section">
-              <SectionHeader title="Explore por Gênero" />
-              <div className="genres-grid">
-                {genres.map(genre => (
-                  <IonButton 
-                    key={genre} 
-                    className="genre-button"
-                    // routerLink={`/category/${genre-slug}`} // TODO: Adicionar lógica do slug
-                  >
-                    {/* <IonIcon icon={...} /> TODO: Adicionar ícones }
-                    <span>{genre}</span>
-                  </IonButton>
-                ))}
-              </div>
             </div>
-            */}
+            
+            {/* 5. Gêneros (MUDANÇA: Agora renderiza o componente) */}
+            <div className="section">
+              <SectionHeader title="Explore por Gênero" />
+              <GenresGrid genres={genres} />
+            </div>
+
+            {/* 6. Liderança (MUDANÇA: Nova seção adicionada) */}
+            <div className="section">
+              <IonCard className="leadershipSection">
+                <IonCardContent>
+                  <div className="leadershipContent">
+                    <h3>Liderança em Gaming no Brasil</h3>
+                    <p>Referência máxima em entretenimento digital, oferecendo a maior variedade de jogos e a comunidade mais engajada do país.</p>
+                  </div>
+                  <IonGrid>
+                    <IonRow>
+                      <IonCol size="12" size-md="6" size-lg="3">
+                        <div className="statItem">
+                          <IonIcon icon={peopleOutline} />
+                          <h4>2.5M+</h4>
+                          <p>Usuários Ativos</p>
+                        </div>
+                      </IonCol>
+                      <IonCol size="12" size-md="6" size-lg="3">
+                        <div className="statItem">
+                          <IonIcon icon={barChartOutline} />
+                          <h4>500K+</h4>
+                          <p>Avaliações Positivas</p>
+                        </div>
+                      </IonCol>
+                      <IonCol size="12" size-md="6" size-lg="3">
+                        <div className="statItem">
+                          <IonIcon icon={ribbonOutline} />
+                          <h4>98%</h4>
+                          <p>Satisfação do Cliente</p>
+                        </div>
+                      </IonCol>
+                      <IonCol size="12" size-md="6" size-lg="3">
+                        <div className="statItem">
+                          <IonIcon icon={shieldCheckmarkOutline} />
+                          <h4>24/7</h4>
+                          <p>Suporte Dedicado</p>
+                        </div>
+                      </IonCol>
+                    </IonRow>
+                  </IonGrid>
+                </IonCardContent>
+              </IonCard>
+            </div>
 
           </>
         )}

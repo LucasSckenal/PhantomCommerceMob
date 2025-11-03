@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-// MUDANÇA: IonSlides e IonSlide foram REMOVIDOS
 import {
   IonButton,
   IonIcon,
@@ -8,11 +7,10 @@ import {
 // MUDANÇA: Importando Swiper e módulos
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperInstance } from 'swiper';
-import { SwiperOptions } from 'swiper/types';
-import { Pagination, Autoplay } from 'swiper/modules';  // MUDANÇA: Módulos do Swiper
-import 'swiper/css'; // MUDANÇA: CSS principal do Swiper
-import 'swiper/css/pagination'; // MUDANÇA: CSS de paginação
-import 'swiper/css/autoplay'; // MUDANÇA: CSS do autoplay
+import { Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/autoplay';
 
 import {
   arrowForward,
@@ -27,7 +25,6 @@ import {
 
 // --- Estilos CSS-in-JS (Traduzido do seu Home.module.scss) ---
 const style = `
-  /* MUDANÇA: O IonSlides precisa de altura definida */
   .heroSlider {
     height: 65vh;
     min-height: 500px;
@@ -75,7 +72,18 @@ const style = `
   }
 
   .heroSubtitle { font-size: 1.2rem; font-weight: bold; }
-  .heroDescription { font-size: 0.95rem; line-height: 1.6; max-width: 480px; }
+  .heroDescription { 
+    font-size: 0.95rem; 
+    line-height: 1.6; 
+    max-width: 480px; 
+    
+    /* Adiciona clamp para limitar a 3 linhas */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   .heroInfoBar {
     display: flex;
@@ -89,8 +97,8 @@ const style = `
     gap: 0.5rem;
     align-items: center;
     background-color: rgba(15, 20, 36, 0.7);
-    padding: 0.4rem 0.8rem; /* Aumentado o padding horizontal */
-    border-radius: 16px; /* var(--br-16) */
+    padding: 0.4rem 0.8rem;
+    border-radius: 16px;
     font-size: 0.9rem;
   }
   .infoItem ion-icon { 
@@ -105,6 +113,12 @@ const style = `
     margin-top: 0.5rem;
   }
   .currentPrice { font-size: 2.2rem; font-weight: 700; }
+  .originalPrice { 
+    font-size: 1rem;
+    color: var(--ion-color-medium);
+    text-decoration: line-through;
+    margin-left: 0.5rem;
+  }
 
   .heroActions {
     display: flex;
@@ -112,12 +126,11 @@ const style = `
     margin-top: 0.5rem;
   }
 
-  /* MUDANÇA: Estilizando IonButton */
   .heroButtonPrimary {
     --background: var(--ion-color-primary, #2D5BFF);
     --background-hover: var(--ion-color-primary-shade, #2951e0);
     --color: var(--ion-text-color-contrast, #fff);
-    --border-radius: 8px; /* var(--br-8) */
+    --border-radius: 8px;
     --padding-start: 2.5rem;
     --padding-end: 2.5rem;
     --padding-top: 0.9rem;
@@ -146,7 +159,6 @@ const style = `
     --color: var(--ion-color-primary, #4D7CFF);
   }
 
-  /* MUDANÇA: Botões de navegação */
   .heroNavArrow {
     position: absolute;
     z-index: 10;
@@ -166,9 +178,8 @@ const style = `
   .heroNavArrow.left { left: 2rem; }
   .heroNavArrow.right { right: 2rem; }
 
-  /* MUDANÇA: Estilizando a paginação do Swiper */
   .heroSlider .swiper-pagination {
-    bottom: 2rem !important; /* Força a posição */
+    bottom: 2rem !important;
   }
   .heroSlider .swiper-pagination-bullet {
     background: var(--ion-color-light, #f4f5f8);
@@ -177,6 +188,80 @@ const style = `
   .heroSlider .swiper-pagination-bullet-active {
     background: var(--ion-color-primary, #4D7CFF);
     opacity: 1;
+  }
+
+  /* MUDANÇA: CSS Responsivo para Mobile */
+  @media (max-width: 768px) {
+    .heroSlider {
+      height: 80vh; /* Mais alto no mobile */
+      min-height: 450px;
+    }
+
+    .heroSlide {
+      padding: 1.5rem;
+      align-items: flex-end; /* Alinha o conteúdo na parte inferior */
+    }
+
+    .heroContent {
+      max-width: 100%; /* Ocupa toda a largura */
+      padding-left: 0;
+      text-align: center; /* Centraliza o texto */
+      align-items: center; /* Centraliza os botões */
+      gap: 0.75rem; /* Espaçamento menor */
+      margin-bottom: 4rem; /* Sobe o conteúdo para cima da paginação */
+    }
+
+    .heroTitle {
+      font-size: 2.5rem; /* Título menor */
+    }
+
+    .heroSubtitle {
+      font-size: 1rem;
+    }
+
+    .heroDescription {
+      font-size: 0.85rem;
+      max-width: 90%;
+    }
+    
+    .heroInfoBar {
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .infoItem, .platformIconsHero {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+    }
+    .infoItem ion-icon, .platformIconsHero ion-icon {
+      font-size: 14px;
+    }
+
+    .heroPriceSection {
+      margin-top: 0.25rem;
+    }
+    .currentPrice {
+      font-size: 1.8rem;
+    }
+
+    .heroActions {
+      gap: 0.75rem;
+      flex-direction: column; /* Botões um em cima do outro */
+      width: 100%;
+    }
+
+    .heroButtonPrimary, .heroButtonSecondary {
+      font-size: 0.9rem;
+      width: 80%;
+      --padding-start: 1.5rem;
+      --padding-end: 1.5rem;
+      --padding-top: 0.8rem;
+      --padding-bottom: 0.8rem;
+    }
+
+    .heroNavArrow {
+      display: none; /* Esconde as setas no mobile */
+    }
   }
 `;
 
@@ -192,38 +277,13 @@ const platformIcons: { [key: string]: string } = {
 // Define a ordem de exibição desejada para as plataformas
 const platformOrder = ['pc', 'playstation', 'xbox', 'nintendo switch', 'steam'];
 
-// Dados mocados (substitua pelos seus dados reais)
-const mockHeroData = [
-  {
-    id: '1',
-    title: 'Cyberpunk 2077',
-    subtitle: 'Phantom Liberty',
-    description: 'Uma expansão de suspense e espionagem para Cyberpunk 2077. Volte como V e embarque em uma missão de alto risco.',
-    rating: 4.8,
-    platforms: ['PC', 'PlayStation', 'Xbox'],
-    price: 'R$ 149,90',
-    backgroundImage: 'https://images.gog-statics.com/b2654516a512d5d2b37060b2d6c13bdc26f634b0718d002fbe3a6c06a8f158c5_background_1920.jpg',
-    productUrl: '/product/1'
-  },
-  {
-    id: '2',
-    title: 'Starfield',
-    subtitle: 'Aventura Espacial',
-    description: 'Starfield é o primeiro novo universo em 25 anos da Bethesda Game Studios, os criadores de The Elder Scrolls V: Skyrim e Fallout 4.',
-    rating: 4.5,
-    platforms: ['PC', 'Xbox'],
-    price: 'R$ 299,00',
-    backgroundImage: 'https://images.gog-statics.com/6a033a2a6320a568a15990f1d56740a6b7eaa40d21c33c37d6d1d4f295b9c71b_background_1920.jpg',
-    productUrl: '/product/2'
-  },
-  // Adicione mais slides
-];
+// MUDANÇA: Interface para as props
+interface HomeHeroSliderProps {
+  games: any[]; // Recebe os jogos como prop
+}
 
-const HomeHeroSlider: React.FC = () => {
+const HomeHeroSlider: React.FC<HomeHeroSliderProps> = ({ games = [] }) => {
   const slidesRef = useRef<SwiperInstance | null>(null);
-
-  // MUDANÇA: Opções do Swiper (não mais necessárias como um objeto separado)
-  // const swiperOptions: SwiperOptions = { ... };
 
   const handlePrev = () => slidesRef.current?.slidePrev();
   const handleNext = () => slidesRef.current?.slideNext();
@@ -240,13 +300,17 @@ const HomeHeroSlider: React.FC = () => {
     });
   };
 
+  // MUDANÇA: Se não houver jogos, não renderiza nada
+  if (!games || games.length === 0) {
+    return null;
+  }
+
   return (
     <div style={{ position: 'relative' }}>
       <style>{style}</style>
-      {/* MUDANÇA: Substituído IonSlides por Swiper */}
       <Swiper
         className="heroSlider"
-        modules={[Pagination, Autoplay]} // MUDANÇA: Passando módulos
+        modules={[Pagination, Autoplay]}
         autoplay={{
           delay: 7000,
           disableOnInteraction: false,
@@ -255,30 +319,32 @@ const HomeHeroSlider: React.FC = () => {
         pagination={{
           clickable: true,
         }}
-        onSwiper={(swiper) => { // MUDANÇA: onIonSlidesDidLoad -> onSwiper
+        onSwiper={(swiper) => {
           slidesRef.current = swiper;
         }}
       >
-        {mockHeroData.map((game) => (
-          // MUDANÇA: Substituído IonSlide por SwiperSlide
+        {/* MUDANÇA: Faz o loop nos 'games' recebidos via props */}
+        {games.map((game: any) => (
           <SwiperSlide
             key={game.id}
             className="heroSlide"
-            style={{ backgroundImage: `url(${game.backgroundImage})` }}
+            // MUDANÇA: Usa os campos de imagem do Firebase
+            style={{ backgroundImage: `url(${game.headerImageUrl || game.coverImageUrl})` }}
           >
             <div className="heroOverlay"></div>
             <div className="heroContent">
               <h2 className="heroTitle">{game.title}</h2>
-              <h3 className="heroSubtitle">{game.subtitle}</h3>
-              <p className="heroDescription">{game.description}</p>
+              {/* MUDANÇA: Usa a primeira categoria como subtítulo */}
+              <h3 className="heroSubtitle">{(game.categories || [])[0] || ''}</h3>
+              <p className="heroDescription">{game.shortDescription || game.description}</p>
               
               <div className="heroInfoBar">
                 <div className="infoItem">
                   <IonIcon icon={star} />
-                  <span>{game.rating}</span>
+                  <span>{game.rating || 'N/A'}</span>
                 </div>
                 <div className="platformIconsHero">
-                  {sortedPlatforms(game.platforms).map((platform) => (
+                  {sortedPlatforms(game.platforms || []).map((platform) => (
                     <IonIcon
                       key={platform}
                       icon={platformIcons[platform.toLowerCase()] || desktopOutline}
@@ -289,23 +355,36 @@ const HomeHeroSlider: React.FC = () => {
               </div>
 
               <div className="heroPriceSection">
-                <IonText><h4 className="currentPrice">{game.price}</h4></IonText>
+                <IonText>
+                  <span className="currentPrice">
+                    {/* MUDANÇA: Lógica de preço */}
+                    {game.discountedPrice
+                      ? `R$ ${game.discountedPrice.toFixed(2).replace('.', ',')}`
+                      : (game.price > 0 ? `R$ ${game.price.toFixed(2).replace('.', ',')}` : 'Grátis')}
+                  </span>
+                  {game.discountedPrice && game.originalPrice && (
+                     <span className="originalPrice">
+                       R$ {game.originalPrice.toFixed(2).replace('.', ',')}
+                     </span>
+                  )}
+                </IonText>
               </div>
 
               <div className="heroActions">
                 <IonButton 
                   className="heroButtonPrimary" 
-                  routerLink={game.productUrl}
+                  // MUDANÇA: Link dinâmico
+                  routerLink={`/product/${game.id}`}
                 >
                   <IonIcon slot="start" icon={arrowForward} />
                   Ver Jogo
                 </IonButton>
-                <IonButton 
+                {/* <IonButton 
                   className="heroButtonSecondary"
                   fill="outline"
                 >
                   Mais Detalhes
-                </IonButton>
+                </IonButton> */}
               </div>
             </div>
           </SwiperSlide>
@@ -332,5 +411,4 @@ const HomeHeroSlider: React.FC = () => {
 };
 
 export default HomeHeroSlider;
-
 
