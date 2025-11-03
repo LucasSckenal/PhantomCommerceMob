@@ -1,2 +1,143 @@
-/* For information on how to create your own theme, please see:
-http://ionicframework.com/docs/theming/ */
+/* ionic/react/css/core.css */
+@import "@ionic/react/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/react/css/normalize.css";
+@import "@ionic/react/css/structure.css";
+@import "@ionic/react/css/typography.css";
+@import "@ionic/react/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/react/css/padding.css";
+@import "@ionic/react/css/float-elements.css";
+@import "@ionic/react/css/text-alignment.css";
+@import "@ionic/react/css/text-transformation.css";
+@import "@ionic/react/css/flex-utils.css";
+
+/**
+ * MUDANÇA: Início das suas variáveis globais (do globals.scss)
+ *
+ * O Ionic usa um sistema de "light" e "dark" mode.
+ * Pelo seu globals.scss, seu site é dark.
+ * Vamos forçar o modo dark e aplicar suas variáveis.
+ */
+body {
+  /* Força o modo dark */
+  --ion-color-step-50: #1a202c;
+  --ion-color-step-100: #242c3d;
+  --ion-color-step-150: #2f394d;
+  --ion-color-step-200: #39455e;
+  --ion-color-step-250: #43516e;
+  --ion-color-step-300: #4e5d7f;
+  --ion-color-step-350: #58698f;
+  --ion-color-step-400: #6275a0;
+  --ion-color-step-450: #6c81b0;
+  --ion-color-step-500: #778dc1;
+  --ion-color-step-550: #8199d1;
+  --ion-color-step-600: #8ba5e2;
+  --ion-color-step-650: #96b2f2;
+  --ion-color-step-700: #a0beff;
+  --ion-color-step-750: #accaff;
+  --ion-color-step-800: #b7d6ff;
+  --ion-color-step-850: #c2e2ff;
+  --ion-color-step-900: #ceeeff;
+  --ion-color-step-950: #d9faff;
+
+  /**
+   * Cores do PhantomCommerce (do globals.scss)
+   */
+
+  /* Backgrounds */
+  --ion-background-color: #0F1424; /* --bg-900 */
+  --ion-background-color-rgb: 15, 20, 36;
+  
+  /* Cor de fundo para "cartões", "itens", "cabeçalhos" */
+  --ion-toolbar-background: #1A202C; /* --bg-800 */
+  --ion-card-background: #1A202C;
+  --ion-item-background: #1A202C;
+  --ion-color-step-100: #1A202C;
+
+  /* Textos */
+  --ion-text-color: #ffffff; /* --txt-50 */
+  --ion-text-color-rgb: 255, 255, 255;
+  
+  /* Cor de texto "secundária" (cinza) */
+  --ion-color-medium: #718096; /* --txt-500 */
+  --ion-color-medium-rgb: 113, 128, 150;
+  --ion-color-medium-shade: #637084;
+  --ion-color-medium-tint: #7e8ca0;
+  --ion-border-color: #4A5568; /* --txt-700 */
+
+  /* Cor Primária (Azul) */
+  --ion-color-primary: #4D7CFF; /* --primary-color-400 */
+  --ion-color-primary-rgb: 77, 124, 255;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #446de0;
+  --ion-color-primary-tint: #5e89ff;
+
+  /* Cor Secundária (Roxo) */
+  --ion-color-secondary: #6E38DB; /* --primary-color-300 */
+  --ion-color-secondary-rgb: 110, 56, 219;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #6131c1;
+  --ion-color-secondary-tint: #7d4dde;
+
+  /* Cor Terciária (Azul mais escuro/Link) */
+  --ion-color-tertiary: #1D4ED8; /* --link-500 */
+  --ion-color-tertiary-rgb: 29, 78, 216;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #1a45be;
+  --ion-color-tertiary-tint: #3560db;
+
+  /* Sucesso */
+  --ion-color-success: #28A745; /* --s-500 */
+  --ion-color-success-rgb: 40, 167, 69;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #23933d;
+  --ion-color-success-tint: #3eb058;
+
+  /* Aviso */
+  --ion-color-warning: #FFB627; /* --w-500 */
+  --ion-color-warning-rgb: 255, 182, 39;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #e0a023;
+  --ion-color-warning-tint: #ffbd3d;
+
+  /* Perigo / Erro */
+  --ion-color-danger: #E03E3E; /* --e-500 */
+  --ion-color-danger-rgb: 224, 62, 62;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #c53636;
+  --ion-color-danger-tint: #e35151;
+}
+
+/*
+ * Força o Ionic a usar o tema dark
+ */
+@media (prefers-color-scheme: light) {
+  body {
+    --ion-background-color: #0F1424;
+    --ion-background-color-rgb: 15, 20, 36;
+    
+    --ion-toolbar-background: #1A202C;
+    --ion-card-background: #1A202C;
+    --ion-item-background: #1A202C;
+    --ion-color-step-100: #1A202C;
+
+    --ion-text-color: #ffffff;
+    --ion-text-color-rgb: 255, 255, 255;
+    
+    --ion-color-medium: #718096;
+    --ion-color-medium-rgb: 113, 128, 150;
+    --ion-color-medium-shade: #637084;
+    --ion-color-medium-tint: #7e8ca0;
+    --ion-border-color: #4A5568;
+  }
+}
+
