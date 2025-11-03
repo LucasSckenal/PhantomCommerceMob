@@ -1,16 +1,11 @@
-import React, { useRef } from 'react';
-import {
-  IonButton,
-  IonIcon,
-  IonText,
-} from '@ionic/react';
-// MUDANÇA: Importando Swiper e módulos
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Swiper as SwiperInstance } from 'swiper';
-import { Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/autoplay';
+import React, { useRef } from "react";
+import { IonButton, IonIcon, IonText } from "@ionic/react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper as SwiperInstance } from "swiper";
+import { Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/autoplay";
 
 import {
   arrowForward,
@@ -21,9 +16,9 @@ import {
   logoSteam,
   gameControllerOutline,
   desktopOutline,
-} from 'ionicons/icons';
+} from "ionicons/icons";
 
-// --- Estilos CSS-in-JS (Traduzido do seu Home.module.scss) ---
+// --- Estilos CSS-in-JS CORRIGIDOS ---
 const style = `
   .heroSlider {
     height: 65vh;
@@ -38,10 +33,25 @@ const style = `
     display: flex;
     align-items: center;
     background-size: cover;
-    background-position: center 30%;
+    background-position: center center; /* CORREÇÃO: Centraliza a imagem */
+    background-repeat: no-repeat;
     padding: 2rem 3rem;
     color: var(--ion-text-color-contrast, #fff);
     position: relative;
+  }
+
+  /* NOVO: Container para garantir que a imagem cubra toda a área */
+  .heroSlide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: 0;
   }
 
   .heroOverlay {
@@ -190,96 +200,135 @@ const style = `
     opacity: 1;
   }
 
-  /* MUDANÇA: CSS Responsivo para Mobile */
+  /* MUDANÇA: CSS Responsivo para Mobile - CORRIGIDO */
   @media (max-width: 768px) {
     .heroSlider {
-      height: 80vh; /* Mais alto no mobile */
-      min-height: 450px;
+      height: 60vh; /* Ajustado para mobile */
+      min-height: 400px;
     }
 
     .heroSlide {
-      padding: 1.5rem;
-      align-items: flex-end; /* Alinha o conteúdo na parte inferior */
+      padding: 1rem;
+      align-items: flex-end;
+      background-position: center center; /* Garante centralização no mobile */
     }
 
     .heroContent {
-      max-width: 100%; /* Ocupa toda a largura */
+      max-width: 100%;
       padding-left: 0;
-      text-align: center; /* Centraliza o texto */
-      align-items: center; /* Centraliza os botões */
-      gap: 0.75rem; /* Espaçamento menor */
-      margin-bottom: 4rem; /* Sobe o conteúdo para cima da paginação */
+      text-align: center;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem; /* Reduzido */
     }
 
     .heroTitle {
-      font-size: 2.5rem; /* Título menor */
+      font-size: 2rem; /* Título menor para mobile */
+      line-height: 1.2;
     }
 
     .heroSubtitle {
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
 
     .heroDescription {
-      font-size: 0.85rem;
-      max-width: 90%;
+      font-size: 0.8rem;
+      max-width: 95%;
+      -webkit-line-clamp: 2; /* Menos linhas no mobile */
     }
     
     .heroInfoBar {
-      gap: 0.75rem;
+      gap: 0.5rem;
       justify-content: center;
     }
 
     .infoItem, .platformIconsHero {
-      padding: 0.3rem 0.6rem;
-      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
     }
     .infoItem ion-icon, .platformIconsHero ion-icon {
-      font-size: 14px;
+      font-size: 12px;
     }
 
     .heroPriceSection {
       margin-top: 0.25rem;
     }
     .currentPrice {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
     }
 
     .heroActions {
-      gap: 0.75rem;
-      flex-direction: column; /* Botões um em cima do outro */
+      gap: 0.5rem;
+      flex-direction: column;
       width: 100%;
     }
 
     .heroButtonPrimary, .heroButtonSecondary {
-      font-size: 0.9rem;
-      width: 80%;
-      --padding-start: 1.5rem;
-      --padding-end: 1.5rem;
-      --padding-top: 0.8rem;
-      --padding-bottom: 0.8rem;
+      font-size: 0.85rem;
+      width: 90%;
+      --padding-start: 1rem;
+      --padding-end: 1rem;
+      --padding-top: 0.7rem;
+      --padding-bottom: 0.7rem;
     }
 
     .heroNavArrow {
-      display: none; /* Esconde as setas no mobile */
+      display: none;
     }
+  }
+
+  /* NOVO: Otimização para telas muito pequenas */
+  @media (max-width: 480px) {
+    .heroSlider {
+      height: 55vh;
+      min-height: 350px;
+    }
+
+    .heroTitle {
+      font-size: 1.7rem;
+    }
+
+    .heroDescription {
+      -webkit-line-clamp: 2;
+    }
+
+    .heroInfoBar {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+  }
+
+  /* NOVO: Garantir que a imagem sempre cubra o container */
+  .heroSlide .image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .heroSlide .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
   }
 `;
 
-// MUDANÇA: Mapeamento de ícones para Ionic
+// ... (o resto do código permanece igual)
 const platformIcons: { [key: string]: string } = {
   xbox: logoXbox,
   playstation: logoPlaystation,
   steam: logoSteam,
-  'nintendo switch': gameControllerOutline,
+  "nintendo switch": gameControllerOutline,
   pc: desktopOutline,
 };
 
-// Define a ordem de exibição desejada para as plataformas
-const platformOrder = ['pc', 'playstation', 'xbox', 'nintendo switch', 'steam'];
+const platformOrder = ["pc", "playstation", "xbox", "nintendo switch", "steam"];
 
-// MUDANÇA: Interface para as props
 interface HomeHeroSliderProps {
-  games: any[]; // Recebe os jogos como prop
+  games: any[];
 }
 
 const HomeHeroSlider: React.FC<HomeHeroSliderProps> = ({ games = [] }) => {
@@ -300,13 +349,22 @@ const HomeHeroSlider: React.FC<HomeHeroSliderProps> = ({ games = [] }) => {
     });
   };
 
-  // MUDANÇA: Se não houver jogos, não renderiza nada
+  // NOVO: Função para garantir que a imagem seja carregada corretamente
+  const getOptimizedImageUrl = (url: string) => {
+    if (!url) return "";
+    // Adiciona parâmetros de otimização se for uma URL do Firebase Storage
+    if (url.includes("firebasestorage.googleapis.com")) {
+      return `${url}?alt=media`;
+    }
+    return url;
+  };
+
   if (!games || games.length === 0) {
     return null;
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: "relative" }}>
       <style>{style}</style>
       <Swiper
         className="heroSlider"
@@ -323,75 +381,103 @@ const HomeHeroSlider: React.FC<HomeHeroSliderProps> = ({ games = [] }) => {
           slidesRef.current = swiper;
         }}
       >
-        {/* MUDANÇA: Faz o loop nos 'games' recebidos via props */}
-        {games.map((game: any) => (
-          <SwiperSlide
-            key={game.id}
-            className="heroSlide"
-            // MUDANÇA: Usa os campos de imagem do Firebase
-            style={{ backgroundImage: `url(${game.headerImageUrl || game.coverImageUrl})` }}
-          >
-            <div className="heroOverlay"></div>
-            <div className="heroContent">
-              <h2 className="heroTitle">{game.title}</h2>
-              {/* MUDANÇA: Usa a primeira categoria como subtítulo */}
-              <h3 className="heroSubtitle">{(game.categories || [])[0] || ''}</h3>
-              <p className="heroDescription">{game.shortDescription || game.description}</p>
-              
-              <div className="heroInfoBar">
-                <div className="infoItem">
-                  <IonIcon icon={star} />
-                  <span>{game.rating || 'N/A'}</span>
-                </div>
-                <div className="platformIconsHero">
-                  {sortedPlatforms(game.platforms || []).map((platform) => (
-                    <IonIcon
-                      key={platform}
-                      icon={platformIcons[platform.toLowerCase()] || desktopOutline}
-                      title={platform}
-                    />
-                  ))}
-                </div>
-              </div>
+        {games.map((game: any) => {
+          const imageUrl = getOptimizedImageUrl(
+            game.headerImageUrl || game.coverImageUrl
+          );
 
-              <div className="heroPriceSection">
-                <IonText>
-                  <span className="currentPrice">
-                    {/* MUDANÇA: Lógica de preço */}
-                    {game.discountedPrice
-                      ? `R$ ${game.discountedPrice.toFixed(2).replace('.', ',')}`
-                      : (game.price > 0 ? `R$ ${game.price.toFixed(2).replace('.', ',')}` : 'Grátis')}
-                  </span>
-                  {game.discountedPrice && game.originalPrice && (
-                     <span className="originalPrice">
-                       R$ {game.originalPrice.toFixed(2).replace('.', ',')}
-                     </span>
-                  )}
-                </IonText>
-              </div>
+          return (
+            <SwiperSlide
+              key={game.id}
+              className="heroSlide"
+              style={{
+                backgroundImage: `url(${imageUrl})`,
+                // NOVO: Garante que a imagem cubra o container
+                backgroundSize: "cover",
+                backgroundPosition: "center center",
+                backgroundRepeat: "no-repeat",
+              }}
+            >
+              {/* NOVO: Container adicional para a imagem como fallback */}
+              <div
+                className="image-container"
+                style={{
+                  backgroundImage: `url(${imageUrl})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center center",
+                  backgroundRepeat: "no-repeat",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 0,
+                }}
+              />
 
-              <div className="heroActions">
-                <IonButton 
-                  className="heroButtonPrimary" 
-                  // MUDANÇA: Link dinâmico
-                  routerLink={`/product/${game.id}`}
-                >
-                  <IonIcon slot="start" icon={arrowForward} />
-                  Ver Jogo
-                </IonButton>
-                {/* <IonButton 
-                  className="heroButtonSecondary"
-                  fill="outline"
-                >
-                  Mais Detalhes
-                </IonButton> */}
+              <div className="heroOverlay"></div>
+              <div className="heroContent">
+                <h2 className="heroTitle">{game.title}</h2>
+                <h3 className="heroSubtitle">
+                  {(game.categories || [])[0] || ""}
+                </h3>
+                <p className="heroDescription">
+                  {game.shortDescription || game.description}
+                </p>
+
+                <div className="heroInfoBar">
+                  <div className="infoItem">
+                    <IonIcon icon={star} />
+                    <span>{game.rating || "N/A"}</span>
+                  </div>
+                  <div className="platformIconsHero">
+                    {sortedPlatforms(game.platforms || []).map((platform) => (
+                      <IonIcon
+                        key={platform}
+                        icon={
+                          platformIcons[platform.toLowerCase()] ||
+                          desktopOutline
+                        }
+                        title={platform}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="heroPriceSection">
+                  <IonText>
+                    <span className="currentPrice">
+                      {game.discountedPrice
+                        ? `R$ ${game.discountedPrice
+                            .toFixed(2)
+                            .replace(".", ",")}`
+                        : game.price > 0
+                        ? `R$ ${game.price.toFixed(2).replace(".", ",")}`
+                        : "Grátis"}
+                    </span>
+                    {game.discountedPrice && game.originalPrice && (
+                      <span className="originalPrice">
+                        R$ {game.originalPrice.toFixed(2).replace(".", ",")}
+                      </span>
+                    )}
+                  </IonText>
+                </div>
+
+                <div className="heroActions">
+                  <IonButton
+                    className="heroButtonPrimary"
+                    routerLink={`/product/${game.id}`}
+                  >
+                    <IonIcon slot="start" icon={arrowForward} />
+                    Ver Jogo
+                  </IonButton>
+                </div>
               </div>
-            </div>
-          </SwiperSlide>
-        ))}
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
 
-      {/* Botões de Navegação Externos */}
       <IonButton
         className="heroNavArrow left"
         fill="clear"
@@ -411,4 +497,3 @@ const HomeHeroSlider: React.FC<HomeHeroSliderProps> = ({ games = [] }) => {
 };
 
 export default HomeHeroSlider;
-

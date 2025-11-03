@@ -1,15 +1,9 @@
 // /src/pages/CategoryPage.tsx
-// MUDANÇA: "use client" removido
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
-// MUDANÇA: Imports do react-router-dom (usado pelo Ionic)
-import { useParams, useLocation } from 'react-router-dom';
-// MUDANÇA: Imports do Ionic (componentes de UI)
+import React, { useState, useEffect, useMemo, Suspense } from "react";
+import { useParams, useLocation } from "react-router-dom";
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonButtons,
   IonBackButton,
@@ -30,20 +24,23 @@ import {
   IonSpinner,
   IonText,
   IonFooter,
-} from '@ionic/react';
-// MUDANÇA: Imports de Ícones do Ionic
-import { options, close, refresh } from 'ionicons/icons';
-import { StoreProvider, useStore } from '../contexts/StoreContext';
-// MUDANÇA: Importando o GameCard (caminho de exemplo)
-import GameCard from '../components/GameCard'; // Assumindo que você criou este componente
+  IonToolbar,
+  IonChip,
+  IonFab,
+  IonFabButton,
+  IonBadge,
+  IonSegment,
+  IonSegmentButton,
+  IonHeader,
+} from "@ionic/react";
+import { options, close, filter } from "ionicons/icons";
+import { StoreProvider, useStore } from "../contexts/StoreContext";
+import GameCard from "../components/GameCard";
 
-// --- 1. NOVO COMPONENTE: O Modal de Filtros ---
-// Todo o seu <aside> foi movido para este componente
-
+// --- Modal de Filtros Otimizado para Mobile ---
 interface FilterModalProps {
   isOpen: boolean;
   onDismiss: () => void;
-  // Passando todos os estados e handlers do useStore()
   allAvailableTags: string[];
   allAvailablePlatforms: string[];
   sortOrder: string;
@@ -76,133 +73,258 @@ const FilterModal: React.FC<FilterModalProps> = ({
   activeFilterCount,
   isPristine,
 }) => {
-  const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '');
+  const [activeTab, setActiveTab] = useState<
+    "sort" | "tags" | "platforms" | "price"
+  >("sort");
+
+  const capitalize = (s: string) =>
+    s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
 
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onDismiss}>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Filtros {activeFilterCount > 0 && `(${activeFilterCount})`}</IonTitle>
-          <IonButtons slot="end">
-            <IonButton onClick={onDismiss}>
-              <IonIcon icon={close} slot="icon-only" />
+    <IonModal
+      isOpen={isOpen}
+      onDidDismiss={onDismiss}
+      breakpoints={[0, 0.85]}
+      initialBreakpoint={0.85}
+      style={{
+        "--border-radius": "20px 20px 0 0",
+        "--background": "var(--ion-color-step-50)",
+        boxShadow: "0 -6px 20px rgba(0,0,0,0.3)",
+      }}
+    >
+      <IonHeader className="ion-no-border">
+        <IonToolbar
+          style={{
+            "--background": "transparent",
+            borderBottom: "1px solid var(--ion-color-step-150)",
+            padding: "4px 12px",
+          }}
+        >
+          <IonButtons slot="start">
+            <IonButton
+              onClick={clearFilters}
+              disabled={isPristine}
+              style={{
+                "--color": isPristine
+                  ? "var(--ion-color-medium)"
+                  : "var(--ion-color-primary)",
+                fontWeight: 500,
+              }}
+            >
+              Limpar
             </IonButton>
           </IonButtons>
+
+          <IonText
+            style={{
+              fontWeight: 700,
+              fontSize: "1.1rem",
+              marginLeft: 8,
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            Filtros
+            {activeFilterCount > 0 && (
+              <IonBadge color="primary" style={{ borderRadius: "6px" }}>
+                {activeFilterCount}
+              </IonBadge>
+            )}
+          </IonText>
+
+          <IonButtons slot="end">
+            <IonButton onClick={onDismiss}>
+              <IonIcon icon={close} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+
+        <IonToolbar style={{ "--background": "transparent" }}>
+          <IonSegment
+            value={activeTab}
+            onIonChange={(e) => setActiveTab(e.detail.value as any)}
+            scrollable
+            mode="md"
+          >
+            <IonSegmentButton value="sort">
+              <IonLabel>Ordenar</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="tags">
+              <IonLabel>Gêneros</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="platforms">
+              <IonLabel>Plataformas</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="price">
+              <IonLabel>Preço</IonLabel>
+            </IonSegmentButton>
+          </IonSegment>
         </IonToolbar>
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {/* MUDANÇA: Seção de Ordenação movida para dentro dos filtros */}
-        <IonList>
-          <IonListHeader>
-            <IonLabel>Ordenar por</IonLabel>
-          </IonListHeader>
-          <IonItem fill="outline">
-            <IonSelect
-              value={sortOrder}
-              onIonChange={(e) => setSortOrder(e.detail.value)}
-              placeholder="Selecionar"
-              interface="action-sheet"
+        {/* Ordenar */}
+        {activeTab === "sort" && (
+          <IonList lines="none">
+            {[
+              { label: "Melhor Avaliação", value: "rating" },
+              { label: "Preço: Menor → Maior", value: "price-asc" },
+              { label: "Preço: Maior → Menor", value: "price-desc" },
+              { label: "Nome: A → Z", value: "name-asc" },
+              { label: "Nome: Z → A", value: "name-desc" },
+            ].map((opt) => (
+              <IonItem
+                key={opt.value}
+                style={{
+                  borderRadius: "12px",
+                  marginBottom: "8px",
+                  background: "var(--ion-color-step-100)",
+                }}
+              >
+                <IonCheckbox
+                  slot="start"
+                  checked={sortOrder === opt.value}
+                  onIonChange={() => setSortOrder(opt.value)}
+                  style={{
+                    "--checkbox-background-checked": "var(--ion-color-primary)",
+                  }}
+                />
+                <IonLabel>{opt.label}</IonLabel>
+              </IonItem>
+            ))}
+          </IonList>
+        )}
+
+        {/* Gêneros */}
+        {activeTab === "tags" && (
+          <IonList lines="none">
+            {allAvailableTags.map((tag) => (
+              <IonItem
+                key={tag}
+                style={{
+                  borderRadius: "12px",
+                  marginBottom: "8px",
+                  background: "var(--ion-color-step-100)",
+                }}
+              >
+                <IonCheckbox
+                  slot="start"
+                  checked={selectedTags.includes(tag.toLowerCase())}
+                  onIonChange={() => handleTagChange(tag)}
+                  style={{
+                    "--checkbox-background-checked": "var(--ion-color-primary)",
+                  }}
+                />
+                <IonLabel>{capitalize(tag)}</IonLabel>
+              </IonItem>
+            ))}
+          </IonList>
+        )}
+
+        {/* Plataformas */}
+        {activeTab === "platforms" && (
+          <IonList lines="none">
+            {allAvailablePlatforms.map((platform) => (
+              <IonItem
+                key={platform}
+                style={{
+                  borderRadius: "12px",
+                  marginBottom: "8px",
+                  background: "var(--ion-color-step-100)",
+                }}
+              >
+                <IonCheckbox
+                  slot="start"
+                  checked={selectedPlatforms.includes(platform.toLowerCase())}
+                  onIonChange={() => handlePlatformChange(platform)}
+                  style={{
+                    "--checkbox-background-checked": "var(--ion-color-primary)",
+                  }}
+                />
+                <IonLabel>{capitalize(platform)}</IonLabel>
+              </IonItem>
+            ))}
+          </IonList>
+        )}
+
+        {/* Preço */}
+        {activeTab === "price" && (
+          <IonList lines="none">
+            <IonItem
+              style={{
+                borderRadius: "12px",
+                marginBottom: "12px",
+                background: "var(--ion-color-step-100)",
+              }}
             >
-              <IonSelectOption value="rating">Melhor Avaliação</IonSelectOption>
-              <IonSelectOption value="price-asc">Preço: Menor para Maior</IonSelectOption>
-              <IonSelectOption value="price-desc">Preço: Maior para Menor</IonSelectOption>
-              <IonSelectOption value="name-asc">Nome: A-Z</IonSelectOption>
-              <IonSelectOption value="name-desc">Nome: Z-A</IonSelectOption>
-            </IonSelect>
-          </IonItem>
-        </IonList>
-
-        <IonList>
-          <IonListHeader>
-            <IonLabel>Gêneros</IonLabel>
-          </IonListHeader>
-          {allAvailableTags.map((tag) => (
-            <IonItem key={tag}>
-              <IonCheckbox
-                slot="start"
-                checked={selectedTags.includes(tag.toLowerCase())}
-                onIonChange={() => handleTagChange(tag)}
+              <IonInput
+                type="number"
+                name="min"
+                label="Preço mínimo"
+                value={priceRange.min}
+                placeholder="Ex: 20"
+                onIonChange={handlePriceChange}
+                style={{
+                  "--padding-start": "10px",
+                  "--border-radius": "10px",
+                }}
               />
-              <IonLabel>{tag}</IonLabel>
             </IonItem>
-          ))}
-        </IonList>
-
-        <IonList>
-          <IonListHeader>
-            <IonLabel>Plataformas</IonLabel>
-          </IonListHeader>
-          {allAvailablePlatforms.map((platform) => (
-            <IonItem key={platform}>
-              <IonCheckbox
-                slot="start"
-                checked={selectedPlatforms.includes(platform.toLowerCase())}
-                onIonChange={() => handlePlatformChange(platform)}
+            <IonItem
+              style={{
+                borderRadius: "12px",
+                background: "var(--ion-color-step-100)",
+              }}
+            >
+              <IonInput
+                type="number"
+                name="max"
+                label="Preço máximo"
+                value={priceRange.max}
+                placeholder="Ex: 200"
+                onIonChange={handlePriceChange}
+                style={{
+                  "--padding-start": "10px",
+                  "--border-radius": "10px",
+                }}
               />
-              <IonLabel>{capitalize(platform)}</IonLabel>
             </IonItem>
-          ))}
-        </IonList>
+          </IonList>
+        )}
 
-        <IonList>
-          <IonListHeader>
-            <IonLabel>Faixa de Preço</IonLabel>
-          </IonListHeader>
-          <IonItem fill="outline" className="ion-margin-bottom">
-            <IonInput
-              type="number"
-              name="min"
-              placeholder="Mín"
-              value={priceRange.min}
-              onIonChange={handlePriceChange}
-            />
-          </IonItem>
-          <IonItem fill="outline">
-            <IonInput
-              type="number"
-              name="max"
-              placeholder="Máx"
-              value={priceRange.max}
-              onIonChange={handlePriceChange}
-            />
-          </IonItem>
-        </IonList>
+        {/* Botão de aplicar */}
+        <div
+          style={{
+            position: "sticky",
+            bottom: `calc(env(safe-area-inset-bottom, 0) + 18px)`,
+            padding: "16px 0",
+            background: "var(--ion-color-step-50)",
+          }}
+        >
+          <IonButton
+            expand="block"
+            size="large"
+            onClick={onDismiss}
+            style={{
+              "--border-radius": "14px",
+              "--background": "var(--ion-color-primary)",
+              fontWeight: "600",
+              boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+            }}
+          >
+            Aplicar Filtros
+          </IonButton>
+        </div>
       </IonContent>
-
-      <IonFooter>
-        <IonToolbar>
-          <IonGrid>
-            <IonRow>
-              <IonCol>
-                <IonButton
-                  fill="outline"
-                  expand="block"
-                  onClick={clearFilters}
-                  disabled={isPristine}
-                >
-                  <IonIcon icon={refresh} slot="start" />
-                  Limpar
-                </IonButton>
-              </IonCol>
-              <IonCol>
-                <IonButton fill="solid" expand="block" onClick={onDismiss}>
-                  Aplicar
-                </IonButton>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </IonToolbar>
-      </IonFooter>
     </IonModal>
   );
 };
 
-// --- 2. COMPONENTE DA UI (Quase idêntico ao seu) ---
+// --- Componente Principal ---
 function CategoryUI() {
-  // MUDANÇA: useParams do react-router-dom
   const params = useParams<{ slug: string }>();
-  const slug = params.slug || 'all';
+  const slug = params.slug || "all";
 
   const {
     loadingGames,
@@ -221,60 +343,77 @@ function CategoryUI() {
   } = useStore();
 
   const [isMounted, setIsMounted] = useState(false);
-  // MUDANÇA: Estado para controlar o modal
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    // MUDANÇA: O useEffect que atualizava a URL (router.push) foi REMOVIDO.
-    // Não é um padrão comum em apps mobile e a lógica de estado do
-    // StoreContext já cuida de re-filtrar os dados.
   }, []);
 
-  const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '');
+  const capitalize = (s: string) =>
+    s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
 
-  // Lógica de título (sem mudanças)
+  // Título dinâmico simplificado
   const dynamicPageTitle = useMemo(() => {
-    // ... (sua lógica original, sem mudanças)
-    const isAllCategory = slug.toLowerCase() === 'all';
-    const baseTagLower = isAllCategory ? '' : decodeURIComponent(slug).toLowerCase();
-    const tagsToDisplay = selectedTags.filter(t => t !== baseTagLower).map(capitalize);
-    const platformsToDisplay = selectedPlatforms.map(capitalize);
-    if (tagsToDisplay.length === 0 && platformsToDisplay.length === 0 && !baseTagLower) return 'Todos os Jogos';
-    let title = "Jogos";
-    if (baseTagLower) title += ` de ${capitalize(baseTagLower)}`;
-    if (tagsToDisplay.length > 0) title += `${baseTagLower ? ' e' : ' de'} ${tagsToDisplay.join(', ')}`;
-    if (platformsToDisplay.length > 0) title += ` para ${platformsToDisplay.join(', ')}`;
-    return title;
+    const isAllCategory = slug.toLowerCase() === "all";
+    const baseTagLower = isAllCategory
+      ? ""
+      : decodeURIComponent(slug).toLowerCase();
+
+    if (
+      !baseTagLower &&
+      selectedTags.length === 0 &&
+      selectedPlatforms.length === 0
+    ) {
+      return "Todos os Jogos";
+    }
+
+    const baseTagDisplay = baseTagLower ? capitalize(baseTagLower) : "";
+    const additionalTags = selectedTags
+      .filter((t) => t !== baseTagLower)
+      .map(capitalize);
+    const platformsDisplay = selectedPlatforms.map(capitalize);
+
+    let title = "";
+    if (baseTagDisplay) title += baseTagDisplay;
+    if (additionalTags.length > 0)
+      title += `${baseTagDisplay ? ", " : ""}${additionalTags.join(", ")}`;
+    if (platformsDisplay.length > 0)
+      title += `${title ? " - " : ""}${platformsDisplay.join(", ")}`;
+
+    return title || "Jogos";
   }, [selectedTags, selectedPlatforms, slug]);
 
-  // Lógica de contagem de filtros (sem mudanças)
+  // Contador de filtros ativos
   const { activeFilterCount, isPristine } = useMemo(() => {
-    // ... (sua lógica original, sem mudanças)
-    const isAllCategory = slug.toLowerCase() === 'all';
-    const baseTag = isAllCategory ? '' : decodeURIComponent(slug).toLowerCase();
-    const additionalTags = selectedTags.filter(t => t !== baseTag);
+    const isAllCategory = slug.toLowerCase() === "all";
+    const baseTag = isAllCategory ? "" : decodeURIComponent(slug).toLowerCase();
+    const additionalTags = selectedTags.filter((t) => t !== baseTag);
     let count = additionalTags.length + selectedPlatforms.length;
     if (priceRange.min) count++;
     if (priceRange.max) count++;
-    if (sortOrder !== 'rating') count++;
+    if (sortOrder !== "rating") count++;
     return { activeFilterCount: count, isPristine: count === 0 };
   }, [selectedTags, selectedPlatforms, priceRange, sortOrder, slug]);
 
-  // Handlers (sem mudanças na lógica interna)
+  // Handlers
   const handleTagChange = (tag: string) => {
     const lowerCaseTag = tag.toLowerCase();
     setSelectedTags((prev: string[]) =>
-      prev.includes(lowerCaseTag) ? prev.filter(t => t !== lowerCaseTag) : [...prev, lowerCaseTag]
+      prev.includes(lowerCaseTag)
+        ? prev.filter((t) => t !== lowerCaseTag)
+        : [...prev, lowerCaseTag]
     );
   };
+
   const handlePlatformChange = (platform: string) => {
     const lowerCasePlatform = platform.toLowerCase();
     setSelectedPlatforms((prev: string[]) =>
-      prev.includes(lowerCasePlatform) ? prev.filter(p => p !== lowerCasePlatform) : [...prev, lowerCasePlatform]
+      prev.includes(lowerCasePlatform)
+        ? prev.filter((p) => p !== lowerCasePlatform)
+        : [...prev, lowerCasePlatform]
     );
   };
-  // MUDANÇA: Adaptado para onIonChange
+
   const handlePriceChange = (e: any) => {
     const { name, value } = e.target;
     setPriceRange((prev: any) => ({ ...prev, [name]: value }));
@@ -283,8 +422,17 @@ function CategoryUI() {
   if (loadingGames && !isMounted) {
     return (
       <IonPage>
-        <IonContent fullscreen className="ion-padding">
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <IonContent
+          fullscreen
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
             <IonSpinner name="crescent" />
             <IonText className="ion-margin-start">Carregando jogos...</IonText>
           </div>
@@ -295,68 +443,93 @@ function CategoryUI() {
 
   return (
     <IonPage>
-      {/* MUDANÇA: Cabeçalho do Ionic com botão de Filtro */}
-      <IonHeader translucent={true}>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/" />
-          </IonButtons>
-          <IonTitle>{dynamicPageTitle}</IonTitle>
-          <IonButtons slot="end">
-            <IonButton onClick={() => setIsFilterModalOpen(true)}>
-              <IonIcon icon={options} slot="icon-only" />
-              {activeFilterCount > 0 && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '5px',
-                    right: '5px',
-                    background: 'var(--ion-color-danger)',
-                    color: 'white',
-                    borderRadius: '50%',
-                    width: '18px',
-                    height: '18px',
-                    fontSize: '12px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
+      <IonContent
+        fullscreen
+        style={{
+          "--padding-bottom": "calc(90px + env(safe-area-inset-bottom, 0))",
+        }}
+      >
+        {/* Header simplificado integrado ao conteúdo */}
+        <div style={{ padding: "16px", paddingBottom: "8px" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "12px",
+            }}
+          >
+            <IonButtons>
+              <IonBackButton
+                text=""
+                style={{
+                  "--color": "var(--ion-color-primary)",
+                  "--background": "transparent",
+                }}
+              />
+            </IonButtons>
+            <IonText>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: "1.4rem",
+                  fontWeight: "bold",
+                  marginLeft: "8px",
+                }}
+              >
+                {dynamicPageTitle}
+              </h1>
+            </IonText>
+          </div>
+
+          {/* Informações rápidas */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <IonText color="medium">
+              <small>{filteredAndSortedGames.length} jogos encontrados</small>
+            </IonText>
+
+            {/* Chips de filtros ativos rápidos */}
+            {activeFilterCount > 0 && (
+              <div>
+                <IonChip
+                  color="primary"
+                  outline
+                  onClick={() => setIsFilterModalOpen(true)}
+                  style={{ cursor: "pointer" }}
                 >
-                  {activeFilterCount}
-                </span>
-              )}
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
+                  <IonIcon icon={filter} size="small" />
+                  <IonLabel>Filtros ({activeFilterCount})</IonLabel>
+                </IonChip>
+              </div>
+            )}
+          </div>
+        </div>
 
-      {/* MUDANÇA: Layout principal agora é o <IonContent> */}
-      <IonContent fullscreen>
-        <header style={{ padding: '16px', borderBottom: '1px solid var(--ion-color-step-150)' }}>
-          <IonText color="medium">
-            <p style={{ margin: 0 }}>
-              Mostrando {filteredAndSortedGames.length} resultados
-            </p>
-          </IonText>
-        </header>
-
-        {/* MUDANÇA: Grid de jogos com <IonGrid> */}
-        <IonGrid>
+        {/* Grid de jogos */}
+        <IonGrid style={{ padding: "8px" }}>
           <IonRow>
             {loadingGames ? (
               <IonCol size="12" className="ion-text-center ion-padding">
                 <IonSpinner name="crescent" />
-                <IonText><p>Atualizando...</p></IonText>
+                <IonText>
+                  <p>Atualizando...</p>
+                </IonText>
               </IonCol>
             ) : filteredAndSortedGames.length === 0 ? (
               <IonCol size="12" className="ion-text-center ion-padding">
-                <IonText><p>Nenhum jogo encontrado com os filtros selecionados.</p></IonText>
+                <IonText color="medium">
+                  <p>Nenhum jogo encontrado com os filtros selecionados.</p>
+                </IonText>
+                <IonButton onClick={clearFilters}>Limpar Filtros</IonButton>
               </IonCol>
             ) : (
               filteredAndSortedGames.map((game: any) => (
-                // MUDANÇA: Colunas responsivas do Ionic
-                <IonCol size="12" sizeSm="6" sizeMd="4" sizeLg="3" key={game.id}>
-                  {/* 2. RENDERIZA O COMPONENTE GameCard */}
+                <IonCol size="6" sizeMd="4" sizeLg="3" key={game.id}>
                   <GameCard game={game} />
                 </IonCol>
               ))
@@ -364,7 +537,40 @@ function CategoryUI() {
           </IonRow>
         </IonGrid>
 
-        {/* MUDANÇA: Renderiza o Modal de Filtros */}
+        {/* Botão flutuante para filtros */}
+        <IonFab
+          vertical="bottom"
+          horizontal="end"
+          slot="fixed"
+          style={{
+            bottom: "120px",
+            marginBottom: "env(safe-area-inset-bottom, 0)",
+          }}
+        >
+          <IonFabButton onClick={() => setIsFilterModalOpen(true)}>
+            <IonIcon icon={options} />
+            {activeFilterCount > 0 && (
+              <IonBadge
+                color="danger"
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  fontSize: "12px",
+                  width: "20px",
+                  height: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {activeFilterCount}
+              </IonBadge>
+            )}
+          </IonFabButton>
+        </IonFab>
+
+        {/* Modal de Filtros */}
         <FilterModal
           isOpen={isFilterModalOpen}
           onDismiss={() => setIsFilterModalOpen(false)}
@@ -387,44 +593,54 @@ function CategoryUI() {
   );
 }
 
-// --- 3. COMPONENTE PRINCIPAL (Wrapper de Contexto) ---
-// (Lógica quase idêntica à sua)
+// --- Wrapper Principal ---
 export default function CategoryPage() {
-  // MUDANÇA: useParams e useLocation do react-router-dom
   const params = useParams<{ slug: string }>();
   const location = useLocation();
-  const slug = params.slug || 'all';
+  const slug = params.slug || "all";
 
-  // Lógica para ler os filtros iniciais da URL (sem mudanças)
   const initialFilters = useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
-    const sort = searchParams.get('sort') || 'rating';
-    const tags = searchParams.get('tags')?.split(',').filter(Boolean) || [];
-    const platforms = searchParams.get('platforms')?.split(',').filter(Boolean) || [];
-    const minPrice = searchParams.get('minPrice') || '';
-    const maxPrice = searchParams.get('maxPrice') || '';
-    const isAllCategory = slug.toLowerCase() === 'all';
-    const baseTags = isAllCategory ? [] : [decodeURIComponent(slug).toLowerCase()];
+    const sort = searchParams.get("sort") || "rating";
+    const tags = searchParams.get("tags")?.split(",").filter(Boolean) || [];
+    const platforms =
+      searchParams.get("platforms")?.split(",").filter(Boolean) || [];
+    const minPrice = searchParams.get("minPrice") || "";
+    const maxPrice = searchParams.get("maxPrice") || "";
+    const isAllCategory = slug.toLowerCase() === "all";
+    const baseTags = isAllCategory
+      ? []
+      : [decodeURIComponent(slug).toLowerCase()];
     return {
       sortOrder: sort,
       selectedTags: [...new Set([...baseTags, ...tags])],
       selectedPlatforms: platforms,
-      priceRange: { min: minPrice, max: maxPrice }
+      priceRange: { min: minPrice, max: maxPrice },
     };
   }, [slug, location.search]);
 
-  // MUDANÇA: Suspense do React em vez do next/navigation
   return (
-    <Suspense fallback={
-      <IonPage>
-        <IonContent fullscreen className="ion-padding">
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-            <IonSpinner name="crescent" />
-            <IonText className="ion-margin-start">Carregando página...</IonText>
-          </div>
-        </IonContent>
-      </IonPage>
-    }>
+    <Suspense
+      fallback={
+        <IonPage>
+          <IonContent fullscreen className="ion-padding">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <IonSpinner name="crescent" />
+              <IonText className="ion-margin-start">
+                Carregando página...
+              </IonText>
+            </div>
+          </IonContent>
+        </IonPage>
+      }
+    >
       <StoreProvider slug={slug} initialFilters={initialFilters}>
         <CategoryUI />
       </StoreProvider>

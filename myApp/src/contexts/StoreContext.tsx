@@ -71,48 +71,64 @@ export function StoreProvider({
 
     // Efeito para buscar os jogos (semelhante ao original)
     useEffect(() => {
-        const fetchGames = async () => {
-            setLoadingGames(true);
-            try {
-                let gamesCollectionRef = collection(db, 'games');
-                let gamesQuery: any = gamesCollectionRef; // Tipo 'any' para flexibilidade na query
+      const fetchGames = async () => {
+        setLoadingGames(true);
+        try {
+          const gamesCollectionRef = collection(db, "games");
+          let gamesQuery: any = gamesCollectionRef;
 
-                const isAllCategory = slug.toLowerCase() === 'all';
-                const baseTagFromSlug = isAllCategory ? '' : capitalize(decodeURIComponent(slug));
+          const isAllCategory = slug.toLowerCase() === "all";
+          const baseTagFromSlug = isAllCategory
+            ? ""
+            : capitalize(decodeURIComponent(slug));
 
-                if (baseTagFromSlug) {
-                    gamesQuery = query(gamesQuery, where('categories', 'array-contains', baseTagFromSlug));
-                }
-                const minPriceVal = parseFloat(String(priceRange.min));
-                if (!isNaN(minPriceVal) && minPriceVal > 0) {
-                    gamesQuery = query(gamesQuery, where('price', '>=', minPriceVal));
-                }
-                const maxPriceVal = parseFloat(String(priceRange.max));
-                if (!isNaN(maxPriceVal) && maxPriceVal > 0) {
-                    gamesQuery = query(gamesQuery, where('price', '<=', maxPriceVal));
-                }
+          if (baseTagFromSlug) {
+            gamesQuery = query(
+              gamesQuery,
+              where("categories", "array-contains", baseTagFromSlug)
+            );
+          }
 
-                const querySnapshot = await getDocs(gamesQuery);
-                const fetchedGames = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    originalPrice: doc.data().oldPrice || doc.data().price,
-                    discountedPrice: doc.data().price,
-                    tags: doc.data().categories || [],
-                    platforms: doc.data().platforms?.map((p: string) => p.toLowerCase()) || [],
-                    gallery: doc.data().galleryImageUrls || [],
-                }));
+          const minPriceVal = parseFloat(String(priceRange.min));
+          if (!isNaN(minPriceVal) && minPriceVal > 0) {
+            gamesQuery = query(gamesQuery, where("price", ">=", minPriceVal));
+          }
 
-                setGames(fetchedGames);
-            } catch (error) {
-                console.error("Erro ao buscar jogos do Firestore:", error);
-            } finally {
-                setLoadingGames(false);
-            }
-        };
+          const maxPriceVal = parseFloat(String(priceRange.max));
+          if (!isNaN(maxPriceVal) && maxPriceVal > 0) {
+            gamesQuery = query(gamesQuery, where("price", "<=", maxPriceVal));
+          }
 
-        fetchGames();
-    }, [slug, priceRange.min, priceRange.max]);
+          const querySnapshot = await getDocs(gamesQuery);
+          const fetchedGames = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+            originalPrice: doc.data().oldPrice || doc.data().price,
+            discountedPrice: doc.data().price,
+            tags: doc.data().categories || [],
+            platforms:
+              doc.data().platforms?.map((p: string) => p.toLowerCase()) || [],
+            gallery: doc.data().galleryImageUrls || [],
+          }));
+
+          setGames(fetchedGames);
+        } catch (error) {
+          console.error("Erro ao buscar jogos do Firestore:", error);
+        } finally {
+          setLoadingGames(false);
+        }
+      };
+
+      fetchGames();
+    }, [
+      slug,
+      priceRange.min,
+      priceRange.max,
+      selectedTags,
+      selectedPlatforms,
+      sortOrder,
+    ]);
+
 
     // Efeito para extrair tags e plataformas
     useEffect(() => {
