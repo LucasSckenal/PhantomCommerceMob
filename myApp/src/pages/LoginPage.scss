@@ -1,0 +1,122 @@
+.login-page {
+ --background: var(--ion-background-color);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+}
+
+.login-container {
+ height: 100%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+}
+
+.login-card {
+ background: var(--ion-toolbar-background);
+ border-radius: 16px;
+ padding: 2.5rem 2rem;
+ box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+ text-align: center;
+}
+
+.login-card h1 {
+ font-size: 1.8rem;
+ font-weight: 700;
+ color: #fff;
+ margin-bottom: 0.4rem;
+}
+
+.login-card p {
+ color: var(--ion-color-medium);
+ margin-bottom: 1.8rem;
+}
+
+.input-item {
+ --background: transparent;
+ border: 1px solid var(--ion-border-color);
+ border-radius: 8px;
+ margin-bottom: 1rem;
+ --color: var(--ion-text-color);
+ --placeholder-color: var(--ion-color-medium);
+ --padding-start: 10px;
+}
+
+.login-button {
+ --background: var(--ion-color-primary);
+ --background-hover: var(--ion-color-primary-tint);
+ --border-radius: 8px;
+
+ margin-top: 0.8rem;
+ font-weight: 600;
+ transition: all 0.25s ease;
+}
+
+.login-button:hover {
+ filter: brightness(1.1);
+}
+
+.register-link {
+ margin-top: 1.2rem;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ gap: 4px;
+ font-size: 0.9rem;
+}
+
+.divider {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ color: var(--ion-color-medium);
+ margin: 1.8rem 0 1.2rem;
+ font-size: 0.9rem;
+ position: relative;
+}
+
+.divider::before,
+.divider::after {
+ content: "";
+ height: 1px;
+ width: 35%;
+ background: var(--ion-border-color);
+ position: absolute;
+}
+
+.divider::before {
+ left: 0;
+}
+
+.divider::after {
+ right: 0;
+}
+
+.google-button {
+ display: inline-flex;
+ width: 70px;
+ /* <--- Alterado de 88px */
+ height: 70px;
+ /* <--- Alterado de 88px */
+ align-items: center;
+ justify-content: center;
+ gap: 8px;
+ border-radius: 50%;
+ /* <--- Alterado de 50px (mais robusto) */
+ font-weight: 500;
+ text-transform: none;
+ background-color: #fff;
+ border: none !important;
+
+ // Importante: Adicione isso para sobrescrever o --padding
+ // que o Ionic adiciona, que pode descentralizar a imagem.
+ --padding-start: 0;
+ --padding-end: 0;
+
+ img {
+  width: 35px;
+  /* <--- Alterado de 44px */
+  height: 35px;
+  /* <--- Alterado de 44px */
+ }
+}

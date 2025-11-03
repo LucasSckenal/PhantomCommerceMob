@@ -28,6 +28,7 @@ import { camera, close, logoGoogle } from "ionicons/icons";
 import { useIonRouter } from "@ionic/react";
 // MUDANÇA: Import do useAuth (o caminho pode precisar de ajuste)
 import { useAuth } from "../contexts/AuthContext";
+import "./RegisterPage.scss";
 // MUDANÇA: updateProfile não é mais necessário aqui, o AuthContext cuida disso
 // import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -194,193 +195,180 @@ const RegisterPage: React.FC = () => {
   // MUDANÇA: JSX totalmente reescrito com componentes Ionic
   return (
     <IonPage>
-      <IonHeader translucent={true}>
-        <IonToolbar>
-          {/* Adiciona um botão de voltar automático */}
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/auth/login" />
-          </IonButtons>
-          <IonTitle>Criar Conta</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen={true}>
-        <IonGrid className="ion-padding">
+      <IonContent fullscreen={true} className="register-page ion-padding">
+        {/* 2. Adiciona a classe "register-container" ao IonGrid */}
+        <IonGrid className="register-container">
           <IonRow className="ion-justify-content-center">
             <IonCol size="12" sizeMd="8" sizeLg="6" sizeXl="4">
-              <div className="ion-text-center ion-margin-bottom">
-                <h1>Crie sua conta</h1>
-                <h3>Junte-se a nós e comece a explorar</h3>
-              </div>
+              {/* 3. Adiciona a div "register-card" envolvendo todo o conteúdo */}
+              <div className="register-card">
+                {/* 4. Muda <h3> para <p> para combinar com o estilo */}
+                <div className="ion-text-center ion-margin-bottom">
+                  <h1>Crie sua conta</h1>
+                  <p>Junte-se a nós e comece a explorar</p>
+                </div>
 
-              {/* Upload de Avatar */}
-              <div className="ion-text-center ion-margin-bottom">
-                <IonAvatar
-                  style={{
-                    width: "120px",
-                    height: "120px",
-                    margin: "auto",
-                    border: "2px dashed var(--ion-color-medium)",
-                    padding: "4px",
-                    position: "relative",
-                  }}
-                  onClick={triggerAvatarClick}
-                >
-                  {avatarPreview ? (
-                    <img src={avatarPreview} alt="Preview" />
-                  ) : (
-                    <IonIcon
-                      icon={camera}
-                      style={{ fontSize: "48px", color: "var(--ion-color-medium)", marginTop: "30px" }}
+                {/* 5. Limpa a seção do Avatar (remove inline styles) */}
+                <div className="avatar-upload">
+                  <IonAvatar
+                    className="avatar-preview" // Adiciona classe
+                    onClick={triggerAvatarClick}
+                    // Remove styles inline
+                  >
+                    {avatarPreview ? (
+                      <img src={avatarPreview} alt="Preview" />
+                    ) : (
+                      <IonIcon
+                        icon={camera}
+                        // Remove styles inline
+                      />
+                    )}
+                    {avatarPreview && (
+                      <IonButton
+                        fill="clear"
+                        color="danger"
+                        onClick={removeAvatar}
+                        className="avatar-remove-button" // Adiciona classe
+                        // Remove styles inline
+                      >
+                        <IonIcon icon={close} slot="icon-only" />
+                      </IonButton>
+                    )}
+                  </IonAvatar>
+                  <IonButton
+                    fill="clear"
+                    onClick={triggerAvatarClick}
+                    className="avatar-trigger-button" // Adiciona classe
+                  >
+                    {avatarPreview ? "Alterar foto" : "Adicionar foto"}
+                  </IonButton>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    hidden
+                    onChange={handleAvatarChange}
+                    accept="image/*"
+                  />
+                  {errors.avatar && (
+                    <IonText color="danger">
+                      <p>{errors.avatar}</p>
+                    </IonText>
+                  )}
+                </div>
+
+                {/* Formulário de Registro (Inputs já estão corretos com fill="outline") */}
+                <form onSubmit={handleSubmit}>
+                  <IonItem fill="outline" className="ion-margin-bottom">
+                    <IonLabel position="floating">Nome</IonLabel>
+                    <IonInput
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onIonChange={handleChange}
+                      required
                     />
-                  )}
-                  {avatarPreview && (
-                    <IonButton
-                      fill="clear"
-                      color="danger"
-                      onClick={removeAvatar}
-                      style={{
-                        position: "absolute",
-                        top: "-5px",
-                        right: "-5px",
-                        zIndex: 10,
-                      }}
-                    >
-                      <IonIcon icon={close} slot="icon-only" />
-                    </IonButton>
-                  )}
-                </IonAvatar>
-                <IonButton
-                  fill="clear"
-                  onClick={triggerAvatarClick}
-                  className="ion-margin-top"
-                >
-                  {avatarPreview ? "Alterar foto" : "Adicionar foto"}
-                </IonButton>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  hidden
-                  onChange={handleAvatarChange}
-                  accept="image/*"
-                />
-                {errors.avatar && (
-                  <IonText color="danger">
-                    <p>{errors.avatar}</p>
-                  </IonText>
-                )}
-              </div>
+                    {errors.name && (
+                      <IonText color="danger" slot="helper">
+                        {errors.name}
+                      </IonText>
+                    )}
+                  </IonItem>
 
-              {/* Formulário de Registro */}
-              <form onSubmit={handleSubmit}>
-                <IonItem fill="outline" className="ion-margin-bottom">
-                  <IonLabel position="floating">Nome</IonLabel>
-                  <IonInput
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onIonChange={handleChange}
-                    required
-                  />
-                  {errors.name && (
-                    <IonText color="danger" slot="helper">
-                      {errors.name}
-                    </IonText>
-                  )}
-                </IonItem>
+                  <IonItem fill="outline" className="ion-margin-bottom">
+                    <IonLabel position="floating">E-mail</IonLabel>
+                    <IonInput
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onIonChange={handleChange}
+                      required
+                    />
+                    {errors.email && (
+                      <IonText color="danger" slot="helper">
+                        {errors.email}
+                      </IonText>
+                    )}
+                  </IonItem>
 
-                <IonItem fill="outline" className="ion-margin-bottom">
-                  <IonLabel position="floating">E-mail</IonLabel>
-                  <IonInput
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onIonChange={handleChange}
-                    required
-                  />
-                  {errors.email && (
-                    <IonText color="danger" slot="helper">
-                      {errors.email}
-                    </IonText>
-                  )}
-                </IonItem>
+                  <IonItem fill="outline" className="ion-margin-bottom">
+                    <IonLabel position="floating">Senha</IonLabel>
+                    <IonInput
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onIonChange={handleChange}
+                      required
+                    />
+                    {errors.password && (
+                      <IonText color="danger" slot="helper">
+                        {errors.password}
+                      </IonText>
+                    )}
+                  </IonItem>
 
-                <IonItem fill="outline" className="ion-margin-bottom">
-                  <IonLabel position="floating">Senha</IonLabel>
-                  <IonInput
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onIonChange={handleChange}
-                    required
-                  />
-                  {errors.password && (
-                    <IonText color="danger" slot="helper">
-                      {errors.password}
-                    </IonText>
-                  )}
-                </IonItem>
+                  <IonItem fill="outline" className="ion-margin-bottom">
+                    <IonLabel position="floating">Confirmar senha</IonLabel>
+                    <IonInput
+                      type="password"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onIonChange={handleChange}
+                      required
+                    />
+                    {errors.confirmPassword && (
+                      <IonText color="danger" slot="helper">
+                        {errors.confirmPassword}
+                      </IonText>
+                    )}
+                  </IonItem>
 
-                <IonItem fill="outline" className="ion-margin-bottom">
-                  <IonLabel position="floating">Confirmar senha</IonLabel>
-                  <IonInput
-                    type="password"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onIonChange={handleChange}
-                    required
-                  />
-                  {errors.confirmPassword && (
-                    <IonText color="danger" slot="helper">
-                      {errors.confirmPassword}
-                    </IonText>
-                  )}
-                </IonItem>
+                  {/* 6. Adiciona a classe "register-button" */}
+                  <IonButton
+                    type="submit"
+                    expand="block"
+                    className="register-button ion-margin-top" // Altere a classe
+                    disabled={loading}
+                  >
+                    {loading ? <IonSpinner name="crescent" /> : "Registrar"}
+                  </IonButton>
+                </form>
 
-                <IonButton
-                  type="submit"
-                  expand="block"
-                  className="ion-margin-top"
-                  disabled={loading}
-                >
-                  {loading ? <IonSpinner name="crescent" /> : "Registrar"}
-                </IonButton>
-              </form>
-
-              <div className="ion-text-center ion-margin-top">
-                <p>
-                  Já tem uma conta?
-                  <IonButton fill="clear" routerLink="/auth/login">
+                {/* 7. Adiciona a classe "login-link" */}
+                <div className="login-link">
+                  <IonText>Já tem uma conta?</IonText>
+                  <IonButton
+                    fill="clear"
+                    routerLink="/auth/login"
+                    size="small"
+                    color="primary"
+                  >
                     Faça login
                   </IonButton>
-                </p>
-              </div>
+                </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  margin: "1.5rem 0",
-                }}
-              >
-                <div style={{ flex: 1, height: "1px", background: "var(--ion-color-medium)" }} />
-                <span style={{ padding: "0 10px", color: "var(--ion-color-medium)" }}>ou</span>
-                <div style={{ flex: 1, height: "1px", background: "var(--ion-color-medium)" }} />
-              </div>
+                {/* 8. Substitui o divisor pelo da LoginPage */}
+                <div className="divider">
+                  <span>ou</span>
+                </div>
 
-              <IonButton
-                expand="block"
-                fill="outline"
-                onClick={() => handleSocialLogin("google")}
-                disabled={loading}
-              >
-                <IonIcon icon={logoGoogle} slot="start" />
-                Entrar com Google
-              </IonButton>
+                {/* 9. Substitui o botão Google pelo botão circular */}
+                <IonButton
+                  fill="clear" // Mude de "outline" para "clear"
+                  className="google-button" // Use a classe nova
+                  onClick={() => handleSocialLogin("google")}
+                  disabled={loading}
+                  // Remove expand="block"
+                >
+                  <img src="/google.png" alt="Google" />
+                  {/* Remova o IonIcon e o texto "Entrar com Google" */}
+                </IonButton>
+              </div>{" "}
+              {/* Fim do .register-card */}
             </IonCol>
           </IonRow>
         </IonGrid>
 
-        {/* MUDANÇA: Toast para erros de submit */}
+        {/* Toast para erros de submit */}
         <IonToast
           isOpen={!!toastMessage}
           message={toastMessage}

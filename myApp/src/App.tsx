@@ -52,6 +52,7 @@ import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import Tabs from './components/Tabs';
 
 setupIonicReact();
 
@@ -68,40 +69,7 @@ const App: React.FC = () => (
             <SearchProvider>
               <IonReactRouter>
                 <IonRouterOutlet>
-                  {/* Rota da Home (baseada na sua `page.jsx`) */}
-                  <Route exact path="/home">
-                    <HomePage />
-                  </Route>
-
-                  {/* Rotas de Autenticação */}
-                  <Route exact path="/auth/login">
-                    <LoginPage />
-                  </Route>
-                  <Route exact path="/auth/register">
-                    <RegisterPage />
-                  </Route>
-
-                  {/* Rotas de E-commerce (Note o :id e :slug para rotas dinâmicas) */}
-                  <Route exact path="/product/:id">
-                    <ProductPage />
-                  </Route>
-                  <Route exact path="/category/:slug">
-                    <CategoryPage />
-                  </Route>
-                  <Route exact path="/search">
-                    <SearchPage />
-                  </Route>
-                  
-                  {/* Rota 404 (sem 'exact path') */}
-                  <Route>
-                    <NotFoundPage />
-                  </Route>
-
-                  {/* Rota Padrão: Redireciona para /home */}
-                  <Route exact path="/">
-                    <Redirect to="/home" />
-                  </Route>
-
+                  <Route path="/" component={Tabs} />
                 </IonRouterOutlet>
               </IonReactRouter>
             </SearchProvider>

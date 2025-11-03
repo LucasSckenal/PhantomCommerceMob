@@ -1,0 +1,84 @@
+.custom-tabbar {
+ position: fixed;
+ bottom: 20px;
+ left: 50%;
+ transform: translateX(-50%);
+ width: 90%;
+ max-width: 420px;
+ height: 64px;
+ background: var(--ion-toolbar-background);
+ border-radius: 40px;
+ box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
+ display: flex;
+ justify-content: space-around;
+ align-items: center;
+ padding: 8px;
+ z-index: 100;
+}
+
+/* botão base */
+ion-tab-button {
+ background: transparent !important;
+ border-radius: 40px;
+ flex: 1;
+ display: flex;
+ justify-content: center;
+ transition: all 0.3s ease;
+}
+
+/* estrutura interna do botão */
+.tab-inner {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 10px;
+ padding: 10px 14px;
+ border-radius: 30px;
+ background: transparent;
+ transition: all 0.3s ease;
+}
+
+/* ícones padrão */
+ion-tab-button ion-icon {
+ color: var(--ion-color-medium);
+ font-size: 22px;
+ transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* label escondido por padrão */
+ion-tab-button ion-label {
+ color: var(--ion-text-color);
+ font-size: 0.9rem;
+ opacity: 0;
+ width: 0;
+ overflow: hidden;
+ white-space: nowrap;
+ transition: all 0.3s ease;
+}
+
+/* aba selecionada */
+ion-tab-button.tab-selected .tab-inner {
+ background: var(--ion-color-primary);
+ box-shadow: 0 0 14px rgba(var(--ion-color-primary-rgb), 0.7);
+ transform: translateY(-4px);
+ padding-right: 20px;
+ padding-left: 20px;
+}
+
+/* ícone e texto quando ativo */
+ion-tab-button.tab-selected ion-icon {
+ color: var(--ion-color-primary-contrast);
+ transform: scale(1.15);
+}
+
+ion-tab-button.tab-selected ion-label {
+ opacity: 1;
+ width: auto;
+}
+
+/* Dark Mode - base no seu tema */
+@media (prefers-color-scheme: dark) {
+ .custom-tabbar {
+  background: var(--ion-toolbar-background);
+ }
+}
