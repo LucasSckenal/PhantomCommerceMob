@@ -11,7 +11,7 @@ import {
 } from '@ionic/react';
 import { useStore } from '../contexts/StoreContext';
 import Header from '../components/Header'; // O cabeçalho que acabamos de criar
-import HeroSection from '../components/HeroSection'; // O carrossel que criamos
+import HeroSection from '../components/HomeHeroSlider'; // O carrossel que criamos
 import SectionHeader from '../components/SectionHeader'; // O título de seção
 import HorizontalGameScroll from '../components/HorizontalGameScroll'; // O scroll horizontal
 // import GameCard from '../components/GameCard'; // TODO: Você precisará criar este

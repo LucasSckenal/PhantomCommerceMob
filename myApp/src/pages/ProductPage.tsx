@@ -20,7 +20,7 @@ import { useProduct } from '../contexts/ProductContext';
 // MUDANÇA: Importando os componentes (caminhos de exemplo)
 // Você precisará traduzir estes componentes do Next.js para o Ionic
 // e salvar em 'src/components/'
-import HeroSection from '../components/HeroSection'; // (Ainda não traduzido)
+import HeroSection from '../components/HomeHeroSlider'; // (Ainda não traduzido)
 import GameDetails from '../components/GameDetails'; // (Ainda não traduzido)
 import RelatedGames from '../components/RelatedGames'; // (Ainda não traduzido)
 

@@ -83,7 +83,7 @@ const App: React.FC = () => (
 
                   {/* Rotas de E-commerce (Note o :id e :slug para rotas dinâmicas) */}
                   <Route exact path="/product/:id">
-                    <ProductDetailPage />
+                    <ProductPage />
                   </Route>
                   <Route exact path="/category/:slug">
                     <CategoryPage />

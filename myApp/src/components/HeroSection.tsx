@@ -1,381 +1,514 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  IonSlides,
-  IonSlide,
   IonButton,
   IonIcon,
+  IonGrid,
+  IonRow,
+  IonCol,
   IonText,
+  IonCard,
+  IonCardContent,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonSegment,
+  IonSegmentButton,
 } from '@ionic/react';
 import {
-  chevronBack,
-  chevronForward,
-  heartOutline,
+  playCircleOutline,
   star,
-  calendarOutline,
+  cartOutline,
+  heartOutline,
+  logoPlaystation,
+  logoXbox,
+  logoSteam,
+  gameControllerOutline,
+  desktopOutline,
 } from 'ionicons/icons';
-import { FaPlaystation, FaXbox, FaSteam } from 'react-icons/fa';
-import { BsNintendoSwitch, BsPcDisplay } from 'react-icons/bs';
-import { useIonRouter } from '@ionic/react';
+import { useCart } from '../contexts/CartContext';
 
-// --- ÍCONES (copiado do seu page.jsx) ---
-const platformIcons: { [key: string]: React.ReactNode } = {
-  xbox: <FaXbox size={16} />,
-  playstation: <FaPlaystation size={16} />,
-  steam: <FaSteam size={16} />,
-  'nintendo switch': <BsNintendoSwitch size={15} />,
-  pc: <BsPcDisplay size={15} />,
+// Mapeamento de plataformas para ícones (VERSÃO IONIC)
+const platformIcons: { [key: string]: string } = {
+  Xbox: logoXbox,
+  PlayStation: logoPlaystation,
+  Steam: logoSteam,
+  'Nintendo Switch': gameControllerOutline,
+  PC: desktopOutline,
 };
 
-// --- Função utilitária (copiado do seu page.jsx) ---
-const formatReleaseDate = (dateStr: string | undefined) => {
-  if (!dateStr) return 'TBA';
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return dateStr;
-  return date.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-};
-
-// --- Estilos CSS-in-JS (traduzido do seu Home.module.scss) ---
-// Vamos injetar esses estilos dinamicamente
-const getStyle = () => `
-  .hero-slides {
-    height: 65vh;
-    min-height: 500px;
-    border-radius: 16px;
-    overflow: hidden;
+// --- Estilos CSS-in-JS (Traduzido do seu HeroSection.module.scss) ---
+const style = `
+  .heroWrapper {
     position: relative;
+    width: 100%;
+    padding-bottom: 3rem;
   }
 
-  .hero-slide {
+  .banner {
     width: 100%;
-    height: 100%;
+    height: 60vh;
+    min-height: 400px;
     background-size: cover;
-    background-position: center 30%;
-    position: relative;
+    background-position: center 25%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  .titleSection {
+    margin-bottom: 2rem;
+    color: var(--ion-text-color, #fff);
+    padding-top: 30vh; 
+  }
+
+  .gameTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .gameMeta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    color: var(--ion-color-medium, #718096);
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .metaItem {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 12px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .classificationBadge {
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+
+  .platformIcons {
+    padding: 0.8rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .platformIconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .priceInfo {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  .discountedPrice {
+    font-size: 1.5rem;
+    font-weight: 600;
     color: var(--ion-text-color, #fff);
   }
 
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background-image: radial-gradient(circle, transparent 45%, black 80%),
-                      linear-gradient(to right, rgba(15, 20, 36, 0.7) 20%, transparent 80%);
-    background-color: rgba(15, 20, 36, 0.4);
+  .originalPrice {
+    font-size: 1rem;
+    color: var(--ion-color-medium, #718096);
+    text-decoration: line-through;
   }
 
-  .hero-content {
-    position: relative;
-    z-index: 2;
-    max-width: 90%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem; /* Reduzido para mobile */
-    padding: 2rem;
-    text-align: left;
-    align-items: flex-start; /* Alinha à esquerda */
-  }
-
-  /* Em telas maiores, recria o layout do Next.js */
-  @media (min-width: 768px) {
-    .hero-content {
-      max-width: 50%;
-      padding-left: 5rem;
-      gap: 1.25rem;
-    }
-  }
-
-  .hero-title {
-    font-size: 2.5rem; /* Ajustado */
+  .saveBadge {
+    background-color: var(--ion-color-success, #28a745);
+    color: var(--ion-color-success-contrast, #fff);
+    font-size: 0.75rem;
     font-weight: 700;
-    line-height: 1.1;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-  }
-
-  .hero-subtitle {
-    font-size: 1.1rem;
-    font-weight: bold;
-  }
-
-  .hero-description {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    max-width: 480px;
-    display: none; /* Escondido em telas pequenas */
-  }
-
-  @media (min-width: 768px) {
-    .hero-description {
-      display: block; /* Mostra em telas maiores */
-    }
-    .hero-title {
-      font-size: 3.5rem;
-    }
-  }
-
-  .hero-info-bar {
-    display: flex;
-    align-items: center;
-    gap: 1rem; /* Ajustado */
-    flex-wrap: wrap;
-  }
-
-  .info-item, .platform-icons-hero {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    background-color: rgba(15, 20, 36, 0.7);
-    padding: 0.4rem 0.6rem;
+    padding: 0.2rem 0.5rem;
     border-radius: 16px;
-    font-size: 0.9rem;
   }
 
-  .info-item ion-icon {
-    color: var(--ion-color-primary, #4D7CFF);
-  }
-
-  .hero-price-section {
-    font-size: 2.2rem;
-    font-weight: 700;
-  }
-
-  .hero-actions {
+  .buttonGroup {
     display: flex;
-    gap: 1rem; /* Ajustado */
-    margin-top: 0.5rem;
-    flex-wrap: wrap; /* Permite que botões quebrem a linha */
+    gap: 1rem;
+    margin-top: 1.5rem;
   }
 
-  /* Botões de navegação */
-  .hero-nav-arrow {
-    position: absolute;
-    z-index: 10;
-    top: 50%;
-    transform: translateY(-50%);
-    --background: rgba(26, 32, 44, 0.5);
-    --background-hover: rgba(77, 124, 255, 0.8);
+  .trailerButton {
     --border-color: var(--ion-color-primary, #4D7CFF);
-    --border-width: 1px;
-    --border-style: solid;
     --color: var(--ion-text-color, #fff);
-    --border-radius: 50%;
-    backdrop-filter: blur(4px);
-    display: none; /* Escondido em telas pequenas */
+  }
+  
+  .mediaGallery {
+    border-radius: 8px;
   }
 
-  @media (min-width: 768px) {
-    .hero-nav-arrow {
-      display: block; /* Mostra em telas maiores */
-    }
-  }
-
-  .nav-left { left: 2rem; }
-  .nav-right { right: 2rem; }
-
-  /* Indicadores */
-  .hero-indicators {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
+  .mainMedia {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background-color: black;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1rem;
     display: flex;
-    gap: 0.75rem;
-    z-index: 2;
+    align-items: center;
+    justify-content: center;
   }
 
-  .indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: var(--ion-color-step-300, #ccc);
-    cursor: pointer;
-    opacity: 0.7;
+  .mainImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
-  .indicator-active {
-    background-color: var(--ion-color-primary, #4D7CFF);
+  .playButton {
+    position: absolute;
+    color: white;
+    --background: rgba(0, 0, 0, 0.3);
+    --border-radius: 50%;
+    --border-color: white;
+    --border-width: 2px;
+    width: 70px;
+    height: 70px;
+  }
+  .playButton ion-icon {
+    font-size: 40px;
+  }
+
+  .thumbnailStrip {
+    --background: transparent;
+  }
+  .thumbnailSegmentButton {
+    --background: transparent;
+    --background-checked: transparent;
+    --border-width: 0;
+    --indicator-color: transparent;
+    padding: 0 !important;
+    margin: 0 4px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
+  .segment-button-checked {
     opacity: 1;
+  }
+  .thumbnailImage {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 2px solid var(--ion-color-medium);
+  }
+  .segment-button-checked .thumbnailImage {
+    border: 2px solid var(--ion-color-primary);
+  }
+
+  .purchaseCard {
+    background: var(--ion-color-step-100, #1A202C);
+    border-radius: 12px;
+  }
+
+  .requirementsCard {
+    --background: var(--ion-color-step-100, #1A202C);
+    border-radius: 12px;
+    margin-top: 1rem;
+  }
+  
+  .reqTitle {
+    color: var(--ion-text-color, #fff);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    border-bottom: 2px solid var(--ion-color-primary);
+    padding-bottom: 6px;
+  }
+
+  .reqList {
+    font-size: 0.85rem;
+    color: var(--ion-text-color, #fff);
+  }
+  .reqList ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+  }
+  .reqList ion-label {
+    display: flex;
+    justify-content: space-between;
+  }
+  .reqList strong {
+    color: var(--ion-color-medium);
   }
 `;
 
-// Opções do IonSlides
-const slideOpts = {
-  speed: 600,
-  autoplay: {
-    delay: 7000,
-  },
-  loop: true,
-  slidesPerView: 1,
-};
+// MUDANÇA: Nome do componente
+const ProductHero: React.FC<{ game: any }> = ({ game }) => {
+  const [isViewingVideo, setIsViewingVideo] = useState(false);
+  const [playerError, setPlayerError] = useState(false);
+  const { addToCart, cartItems } = useCart();
 
-// Props do componente
-interface HeroSectionProps {
-  heroGames: any[]; // Use um tipo mais específico se tiver (ex: Game[])
-}
+  const isInCart = cartItems.some((item: any) => item.id === game.id);
 
-const HeroSection: React.FC<HeroSectionProps> = ({ heroGames }) => {
-  const router = useIonRouter();
-  const slidesRef = useRef<HTMLIonSlidesElement>(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [styleInjected, setStyleInjected] = useState(false);
-
-  // Injeta os estilos no <head> uma única vez
-  useEffect(() => {
-    const styleElement = document.createElement('style');
-    styleElement.innerHTML = getStyle();
-    document.head.appendChild(styleElement);
-    setStyleInjected(true);
-
-    return () => {
-      // Limpa os estilos quando o componente é desmontado
-      document.head.removeChild(styleElement);
+  const handleAddToCart = () => {
+    const itemToAdd = {
+      id: game.id,
+      name: game.title,
+      edition: 'Edição Padrão',
+      price: game.discountedPrice,
+      oldPrice: game.originalPrice,
+      image: game.bannerImage || game.headerImageUrl,
+      quantity: 1 
     };
-  }, []);
+    addToCart(itemToAdd);
+  };
 
-  if (!styleInjected) {
-    return null; // Não renderiza nada até os estilos serem injetados
-  }
+  // ... (toda a lógica permanece a mesma) ...
+  const hasDiscount = game.originalPrice && game.discountedPrice && game.originalPrice > game.discountedPrice;
+  const gameDiscount = hasDiscount ? game.originalPrice - game.discountedPrice : 0;
+  const discountPercentage = hasDiscount ? Math.round(((game.originalPrice - game.discountedPrice) / game.originalPrice) * 100) : 0;
 
-  const handleSlideChange = async () => {
-    const index = await slidesRef.current?.getActiveIndex();
-    const totalSlides = heroGames.length;
-    if (index !== undefined) {
-      // O IonSlides com loop adiciona slides extras, precisamos normalizar o índice
-      setCurrentSlide(index % totalSlides);
+  const gameRelease = new Date(game.releaseDate);
+  const today = new Date();
+  const isReleased = today >= gameRelease;
+
+  const formattedReleaseDate = gameRelease.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+
+  const mainTrailerUrl = game.trailerUrls && game.trailerUrls.length > 0 ? game.trailerUrls[0] : '';
+
+  const extractYouTubeID = (url: string) => {
+    if (!url) return null;
+    try {
+      const regex = /(?:youtube\.com\/(?:.*v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
+      const m = url.match(regex);
+      if (m && m[1]) return m[1];
+      const q = url.split('?')[1] || '';
+      const params = new URLSearchParams(q);
+      if (params.has('v')) return params.get('v');
+      return null;
+    } catch (e) {
+      console.warn('extractYouTubeID error', e);
+      return null;
     }
   };
 
-  const handleNav = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      slidesRef.current?.slidePrev();
+  const youtubeId = extractYouTubeID(mainTrailerUrl);
+  const youtubeThumbnailUrl = youtubeId ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg` : null;
+  
+  const galleryImages = [
+    ...(youtubeThumbnailUrl ? [youtubeThumbnailUrl] : []),
+    ...game.gallery
+  ];
+  
+  const [activeImage, setActiveImage] = useState(galleryImages[0]);
+
+  useEffect(() => {
+    setPlayerError(false);
+  }, [mainTrailerUrl]);
+
+  const handlePlayVideo = () => {
+    if (!youtubeId) {
+      console.warn('Nenhum trailer do YouTube disponível');
+      return;
+    }
+    setPlayerError(false);
+    setIsViewingVideo(true);
+    setActiveImage(youtubeThumbnailUrl);
+  };
+
+  const handleThumbnailClick = (img: string) => {
+    if (img === youtubeThumbnailUrl) {
+      handlePlayVideo();
     } else {
-      slidesRef.current?.slideNext();
+      setIsViewingVideo(false);
+      setActiveImage(img);
     }
   };
-
-  const handleIndicatorClick = (index: number) => {
-    slidesRef.current?.slideTo(index);
-  };
-
-  // MUDANÇA: Link (router.push) em vez de <Link>
-  const goToProduct = (id: string) => {
-    router.push(`/product/${id}`);
-  };
-
-  if (!heroGames || heroGames.length === 0) {
-    return null; // Não renderiza nada se não houver jogos
+  
+  const onSegmentChange = (e: CustomEvent) => {
+    handleThumbnailClick(e.detail.value);
   }
+
 
   return (
-    <>
-      <IonSlides
-        ref={slidesRef}
-        options={slideOpts}
-        onIonSlideDidChange={handleSlideChange}
-        pager={false} // Desativamos o pager padrão para usar o nosso
-        className="hero-slides"
-      >
-        {heroGames.map((game) => (
-          <IonSlide
-            key={game.id}
-            className="hero-slide"
-            style={{
-              backgroundImage: `url(${
-                game.headerImageUrl || game.coverImageUrl || '/placeholder.jpg'
-              })`,
-            }}
-          >
-            <div className="hero-overlay"></div>
-            <div className="hero-content">
-              <IonText>
-                <h1 className="hero-title">{game.title}</h1>
-              </IonText>
-              <IonText>
-                <h2 className="hero-subtitle">
-                  {game.shortDescription || 'Confira agora este sucesso!'}
-                </h2>
-              </IonText>
-              <p className="hero-description">
-                {(game.about || game.description || 'Um dos jogos...').substring(
-                  0,
-                  200
-                )}
-                ...
-              </p>
-              <div className="hero-info-bar">
-                <div className="info-item">
-                  <IonIcon icon={star} />
-                  <span>{game.rating} estrelas</span>
-                </div>
-                <div className="info-item">
-                  <IonIcon icon={calendarOutline} />
-                  <span>Lançamento: {formatReleaseDate(game.releaseDate)}</span>
-                </div>
-                <div className="platform-icons-hero">
-                  {game.platforms?.map((platform: string) => (
-                    <span key={platform} title={platform}>
-                      {platformIcons[platform.toLowerCase()] ||
-                        platformIcons.pc}
+    <div className="hero-wrapper">
+      <style>{style}</style>
+      <div
+        className="banner"
+        style={{
+          backgroundImage: `linear-gradient(180deg, rgba(15, 20, 36, 0.2) 0%, rgba(0, 0, 0, 0.3) 40%, rgba(15, 20, 36, 0.8) 70%, rgba(15, 20, 36, 1) 100%), url('${game.headerImageUrl || game.coverImageUrl}')`
+        }}
+      ></div>
+
+      <IonGrid fixed={true}>
+        <IonRow>
+          <IonCol>
+            <section className="titleSection">
+              <h1 className="gameTitle">{game.title}</h1>
+              <div className="gameMeta">
+                <span className="metaItem">
+                  <IonIcon icon={star} /> {game.rating}
+                </span>
+                <span className="metaItem">Lançamento: {formattedReleaseDate}</span>
+                <div className="metaItem platformIcons">
+                  {game.platforms.map((platform: string) => (
+                    <span key={platform} title={platform} className="platformIconWrapper">
+                      <IonIcon icon={platformIcons[platform] || desktopOutline} />
                     </span>
                   ))}
                 </div>
+                <span className="metaItem classificationBadge">{game.classification}</span>
               </div>
-              <div className="hero-price-section">
-                <span>
-                  R${' '}
-                  {(game.discountedPrice || game.price).toFixed(2).replace('.', ',')}
-                </span>
+              <div className="priceInfo">
+                {hasDiscount ? (
+                  <>
+                    <span className="discountedPrice">R$ {game.discountedPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="originalPrice">R$ {game.originalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="saveBadge">{discountPercentage}% OFF</span>
+                  </>
+                ) : (
+                  <span className="discountedPrice">R$ {game.originalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                )}
               </div>
-              <div className="hero-actions">
-                <IonButton onClick={() => goToProduct(game.id)}>
-                  Ver jogo
+              <div className="buttonGroup">
+                <IonButton
+                  onClick={handleAddToCart}
+                  disabled={isInCart}
+                  size="large"
+                >
+                  <IonIcon slot="start" icon={cartOutline} />
+                  {isInCart ? 'No Carrinho' : (isReleased ? 'Comprar Agora' : 'Realizar Pré-Venda')}
                 </IonButton>
-                <IonButton fill="outline" color="light">
-                  <IonIcon slot="start" icon={heartOutline} />
-                  Favoritos
-                </IonButton>
+                {mainTrailerUrl && (
+                  <IonButton fill="outline" size="large" className="trailerButton">
+                    <IonIcon slot="start" icon={heartOutline} />
+                    Adicionar à Lista de Desejos
+                  </IonButton>
+                )}
               </div>
+            </section>
+          </IonCol>
+        </IonRow>
+
+        <IonRow>
+          {/* Coluna da Esquerda (Mídia) */}
+          <IonCol size="12" size-lg="7">
+            <div className="mediaGallery">
+              <div className="mainMedia">
+                {isViewingVideo && youtubeId ? (
+                  <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
+                    <iframe
+                      src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1&color=white`}
+                      title="Trailer do jogo"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                      style={{
+                        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                        border: 'none', borderRadius: '12px'
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <img src={activeImage} alt="Visualização do jogo" className="mainImage" />
+                    {!isViewingVideo && activeImage === youtubeThumbnailUrl && (
+                      <IonButton className="playButton" fill="clear" onClick={handlePlayVideo}>
+                        <IonIcon icon={playCircleOutline} />
+                      </IonButton>
+                    )}
+                  </>
+                )}
+              </div>
+              
+              <IonSegment 
+                scrollable 
+                value={activeImage} 
+                onIonChange={onSegmentChange}
+                className="thumbnailStrip"
+              >
+                {galleryImages.map((img, index) => (
+                  <IonSegmentButton 
+                    key={index} 
+                    value={img} 
+                    className="thumbnailSegmentButton"
+                  >
+                    <img src={img} alt={`Thumbnail ${index + 1}`} className="thumbnailImage" />
+                  </IonSegmentButton>
+                ))}
+              </IonSegment>
             </div>
-          </IonSlide>
-        ))}
-      </IonSlides>
+          </IonCol>
+          
+          {/* Coluna da Direita (Compra e Requisitos) */}
+          <IonCol size="12" size-lg="5">
+            <IonCard className="purchaseCard">
+              <IonCardContent>
+                <div className="priceInfo">
+                  {hasDiscount ? (
+                    <>
+                      <span className="discountedPrice">R$ {game.discountedPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                      <span className="originalPrice">R$ {game.originalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </>
+                  ) : (
+                    <span className="discountedPrice">R$ {game.originalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  )}
+                </div>
+                {hasDiscount && (
+                  <IonText color="success">
+                    <p style={{ fontWeight: 'bold', marginBottom: '12px' }}>
+                      Você economiza R$ {gameDiscount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                  </IonText>
+                )}
+                <IonButton
+                  expand="block"
+                  onClick={handleAddToCart}
+                  disabled={isInCart}
+                  style={{ marginTop: hasDiscount ? '0' : '12px' }}
+                >
+                  <IonIcon slot="start" icon={cartOutline} />
+                  {isInCart ? 'No Carrinho' : (isReleased ? 'Comprar Agora' : 'Realizar Pré-Venda')}
+                </IonButton>
+              </IonCardContent>
+            </IonCard>
 
-      {/* Navegação Customizada (Setas) */}
-      <IonButton
-        fill="clear"
-        className="hero-nav-arrow nav-left"
-        onClick={() => handleNav('prev')}
-        aria-label="Slide Anterior"
-      >
-        <IonIcon icon={chevronBack} slot="icon-only" />
-      </IonButton>
-      <IonButton
-        fill="clear"
-        className="hero-nav-arrow nav-right"
-        onClick={() => handleNav('next')}
-        aria-label="Próximo Slide"
-      >
-        <IonIcon icon={chevronForward} slot="icon-only" />
-      </IonButton>
-
-      {/* Indicadores Customizados */}
-      <div className="hero-indicators">
-        {heroGames.map((_, index) => (
-          <span
-            key={index}
-            className={`indicator ${
-              currentSlide === index ? 'indicator-active' : ''
-            }`}
-            onClick={() => handleIndicatorClick(index)}
-          ></span>
-        ))}
-      </div>
-    </>
+            <IonCard className="requirementsCard">
+              <IonCardContent>
+                <h3 className="reqTitle">Requisitos Mínimos</h3>
+                <IonList lines="none" className="reqList">
+                  <IonItem><IonLabel><strong>CPU:</strong> <span>{game.systemRequirements.minimum.cpu}</span></IonLabel></IonItem>
+                  <IonItem><IonLabel><strong>RAM:</strong> <span>{game.systemRequirements.minimum.ram}</span></IonLabel></IonItem>
+                  <IonItem><IonLabel><strong>GPU:</strong> <span>{game.systemRequirements.minimum.gpu}</span></IonLabel></IonItem>
+                  <IonItem><IonLabel><strong>Armazenamento:</strong> <span>{game.systemRequirements.minimum.storage}</span></IonLabel></IonItem>
+                </IonList>
+              </IonCardContent>
+            </IonCard>
+            
+            <IonCard className="requirementsCard">
+              <IonCardContent>
+                <h3 className="reqTitle">Requisitos Recomendados</h3>
+                <IonList lines="none" className="reqList">
+                  <IonItem><IonLabel><strong>CPU:</strong> <span>{game.systemRequirements.recommended.cpu}</span></IonLabel></IonItem>
+                  <IonItem><IonLabel><strong>RAM:</strong> <span>{game.systemRequirements.recommended.ram}</span></IonLabel></IonItem>
+                  <IonItem><IonLabel><strong>GPU:</strong> <span>{game.systemRequirements.recommended.gpu}</span></IonLabel></IonItem>
+                  <IonItem><IonLabel><strong>Armazenamento:</strong> <span>{game.systemRequirements.recommended.storage}</span></IonLabel></IonItem>
+                </IonList>
+              </IonCardContent>
+            </IonCard>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
+    </div>
   );
 };
 
-export default HeroSection;
-
+// MUDANÇA: Exporta o novo nome
+export default ProductHero;
