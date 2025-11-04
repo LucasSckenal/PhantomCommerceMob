@@ -35,41 +35,52 @@
 
 ## Visão Geral
 
-O **PhantomCommerce** é uma plataforma de e‑commerce especializada em jogos.  
-Permite aos usuários navegar por catálogos de jogos, visualizar detalhes, adicionar ao carrinho, etc.
+O **PhantomCommerce** é uma plataforma de e‑commerce especializada em jogos, agora refatorada como um aplicativo móvel híbrido usando o framework Ionic. Permite aos usuários navegar por catálogos de jogos, visualizar detalhes, adicionar ao carrinho e autenticar-se, tudo uma experiência otimizada para mobile.
 
-![Exemplo da página de produto](phantomcommerce/public/example_productpage.png)
+![Exemplo da página de produto](phantomcommercemob/public/example_productpage.png)
 
 ---
 
 ## Funcionalidades
 
-- Listagem de jogos  
-- Página de detalhe de jogo (descrição, imagens, preço)  
-- Carrinho de compras  
-- Gerenciamento administrativo (adicionar jogos)  
-- Autenticação de usuários / login / logout  
-- Filtros / busca de jogos  
-- UI amigável  
+- Listagem de jogos com busca e filtros;
+- Página de detalhes do produto (descrição, imagens, preço);
+- Carrinho de compras persistente (Firebase para usuários logados e Preferences para convidados);
+- Autenticação de usuários (Login, Registro) com Firebase Auth;
+- Design responsivo e "mobile-first";
+- Carrosel de destaques e seções de "Mais Vendidos" e "Gêneros".
 
 ---
 
 ## Tecnologias Utilizadas
 
-- **Frontend**: NextJS, SCSS  
-- **Backend / API**: NextJS  
-- **Banco de Dados**: FireBase  
-- **Frameworks / Bibliotecas**: React, Lucide-Icons, React-Icons, FireBase e Sass  
-- **Ferramentas de build / bundlers**: Next
+- **Frontend**: Ionic Framework, React, TypeScript, SCSS;
+- **Banco de Dados**: FireBase (Firestore, Authentication, Storage);
+- **Frameworks / Bibliotecas**: React, Ionic Framework, ionicons/icons, Swiper.js e Capacitor (@capacitor/preferences);
+- **Ferramentas de build / bundlers**: Vite.
 
 ---
 
 ## Arquitetura & Estrutura do Projeto
 
 Uma visão de alto nível da estrutura de pastas:
-
-![Estrutura do projeto](phantomcommerce/public/project_structure.png)
-
+```plaintext
+myapp/
+├── public/ # Ícones e assets estáticos
+├── src/
+│ ├── components/ # Componentes React reutilizáveis (GameCard, Header, etc.)
+│ ├── contexts/ # Contextos React (AuthContext, CartContext, etc.)
+│ ├── lib/ # Configuração do Firebase
+│ ├── pages/ # As páginas da aplicação (HomePage, LoginPage, etc.)
+│ ├── theme/ # CSS global (variables.css)
+│ ├── App.tsx # Definição principal das rotas (React Router)
+│ └── main.tsx # Ponto de entrada da aplicação
+├── .env.local # Chaves de API (NÃO versionada)
+├── capacitor.config.ts # Configuração do Capacitor (para build nativo)
+├── ionic.config.json # Configuração do Ionic
+├── package.json
+└── tsconfig.json
+```
 ---
 
 ## Instalação & Setup
@@ -78,13 +89,16 @@ Siga os passos abaixo para rodar o projeto localmente:
 
 ```bash
 # Clone o repositório
-git clone https://github.com/LucasSckenal/PhantomCommerce.git
+git clone https://github.com/LucasSckenal/PhantomCommerceMob.git
 
 # Entre na pasta do projeto
-cd PhantomCommerce
+cd myapp
 
 # Instale as dependências
 npm install
+
+# Instale as bibliotecas necessárias que não são padrão
+npm install firebase swiper @capacitor/preferences
 ```
 
 ---
@@ -95,13 +109,13 @@ Crie um arquivo `.env.local` com as seguintes variáveis (exemplos):
 
 ```
 # Exemplo
-NEXT_PUBLIC_FIREBASE_API_KEY=
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
-NEXT_PUBLIC_FIREBASE_APP_ID=
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_FIREBASE_MEASUREMENT_ID=
 ```
 
 ---
@@ -111,13 +125,13 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 Depois de instalar e configurar:
 
 ```bash
-npm run dev
+ionic serve
 ```
 
 Abra no navegador:
 
 ```
-http://localhost:3000
+http://localhost:8100
 ```
 
 ---
