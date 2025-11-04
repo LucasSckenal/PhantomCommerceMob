@@ -196,10 +196,12 @@
 
     .requirement-section {
      h4 {
-      margin: 0 0 8px 0;
-      color: var(--ion-color-primary);
-      font-size: 0.9rem;
+      color: var(--ion-text-color, #fff);
       font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      position: relative;
+      padding-bottom: 6px;
      }
 
      ul {
@@ -222,6 +224,21 @@
    }
   }
  }
+
+ .requirement-section h4 {
+  &::after {
+   content: "";
+   position: absolute;
+   bottom: 0;
+   left: 0;
+   width: 50px;
+   /* tamanho da linha */
+   height: 3px;
+   background-color: var(--ion-color-primary, #4D7CFF);
+   border-radius: 2px;
+  }
+ }
+
 
  .video-container {
   position: relative;

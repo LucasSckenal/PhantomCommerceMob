@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   IonCard,
   IonCardContent,
@@ -9,124 +9,69 @@ import {
   IonList,
   IonItem,
   IonLabel,
-} from '@ionic/react';
-
-// --- Estilos CSS-in-JS (Traduzido do seu GameDetails.module.scss) ---
-const style = `
-  /* MUDANÇA: .aboutSection virou um IonCard */
-  .aboutCard {
-    /* MUDANÇA: Usei a variável de cor do Ionic que mapeamos no variables.css */
-    --background: var(--ion-color-step-100, #1A202C); 
-    border-radius: 16px; 
-    margin: 0 auto 3rem auto;
-    /* MUDANÇA: IonCardContent já tem padding, mas podemos forçar o seu */
-    padding: 1rem; 
-  }
-
-  .sectionTitle {
-    width: fit-content;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--ion-text-color, #fff);
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--ion-color-primary, #4D7CFF);
-  }
-
-  .gameDescription {
-    font-size: 1rem;
-    color: var(--ion-text-color, #fff);
-    margin-bottom: 2rem;
-    line-height: 1.7;
-    text-align: justify;
-  }
-
-  /* MUDANÇA: Estilizando a lista e os itens */
-  .infoList {
-    background: transparent;
-    --ion-background-color: transparent;
-  }
-
-  .infoItem {
-    --background: transparent;
-    --padding-start: 0;
-    --inner-padding-end: 0;
-    align-items: flex-start;
-    flex-direction: column;
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-
-  .infoLabel {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: var(--ion-color-medium, #718096);
-    margin-bottom: 0.25rem;
-  }
-
-  .infoValue {
-    color: var(--ion-text-color, #fff);
-    font-weight: 500;
-    font-size: 1rem;
-  }
-`;
+} from "@ionic/react";
+import styles from "./GameDetails.module.scss";
 
 const GameDetails: React.FC<{ game: any }> = ({ game }) => {
-  if (!game) {
-    return null;
-  }
+  if (!game) return null;
 
   return (
-    // MUDANÇA: Usando IonGrid para controlar o padding
     <IonGrid fixed={true}>
-      <style>{style}</style>
-      <IonRow>
-        <IonCol>
-          <IonCard className="aboutCard">
+      <IonRow className="ion-justify-content-center">
+        <IonCol size="12" sizeMd="10" sizeLg="8">
+          <IonCard className={styles.aboutCard}>
             <IonCardContent>
               <IonText>
-                <h2 className="sectionTitle">Sobre o Jogo</h2>
-              </IonText>
-              <IonText>
-                <p className="gameDescription">{game.description}</p>
+                <h2 className={styles.sectionTitle}>Sobre o Jogo</h2>
               </IonText>
 
-              {/* MUDANÇA: .infoGrid virou IonGrid + IonList */}
-              <IonList className="infoList" lines="none">
+              <IonText>
+                <p className={styles.gameDescription}>{game.description}</p>
+              </IonText>
+
+              <IonList className={styles.infoList} lines="none">
                 <IonGrid>
                   <IonRow>
                     <IonCol size="12" size-md="6">
-                      <IonItem className="infoItem">
+                      <IonItem className={styles.infoItem}>
                         <IonLabel>
-                          <p className="infoLabel">Desenvolvedora:</p>
-                          <span className="infoValue">{game.developer}</span>
+                          <p className={styles.infoLabel}>Desenvolvedora:</p>
+                          <span className={styles.infoValue}>
+                            {game.developer}
+                          </span>
                         </IonLabel>
                       </IonItem>
                     </IonCol>
 
                     <IonCol size="12" size-md="6">
-                      <IonItem className="infoItem">
+                      <IonItem className={styles.infoItem}>
                         <IonLabel>
-                          <p className="infoLabel">Publicadora:</p>
-                          <span className="infoValue">{game.publisher}</span>
+                          <p className={styles.infoLabel}>Publicadora:</p>
+                          <span className={styles.infoValue}>
+                            {game.publisher}
+                          </span>
                         </IonLabel>
                       </IonItem>
                     </IonCol>
 
                     <IonCol size="12" size-md="6">
-                      <IonItem className="infoItem">
+                      <IonItem className={styles.infoItem}>
                         <IonLabel>
-                          <p className="infoLabel">Gêneros:</p>
-                          <span className="infoValue">{game.tags.join(', ')}</span>
+                          <p className={styles.infoLabel}>Gêneros:</p>
+                          <span className={styles.infoValue}>
+                            {game.tags?.join(", ") || "N/A"}
+                          </span>
                         </IonLabel>
                       </IonItem>
                     </IonCol>
 
                     <IonCol size="12" size-md="6">
-                      <IonItem className="infoItem">
+                      <IonItem className={styles.infoItem}>
                         <IonLabel>
-                          <p className="infoLabel">Classificação:</p>
-                          <span className="infoValue">{game.classification}</span>
+                          <p className={styles.infoLabel}>Classificação:</p>
+                          <span className={styles.infoValue}>
+                            {game.classification || "Livre"}
+                          </span>
                         </IonLabel>
                       </IonItem>
                     </IonCol>

@@ -141,7 +141,6 @@ const HomePage: React.FC = () => {
   return (
     <IonPage>
       <style>{style}</style>
-      <Header />
       
       <IonContent className="home-page-content" fullscreen>
         {loadingGames ? (
