@@ -15,7 +15,7 @@ import {
 import { barChartOutline, peopleOutline, ribbonOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 import { useStore } from '../contexts/StoreContext';
 import Header from '../components/Header';
-import HomeHeroSlider from '../components/HomeHeroSlider'; // Renomeado de HeroSection
+import HomeHeroSlider from '../components/HomeHeroSlider';
 import SectionHeader from '../components/SectionHeader';
 import HorizontalGameScroll from '../components/HorizontalGameScroll';
 // MUDANÇA: Importando os novos componentes

@@ -136,7 +136,7 @@ const style = `
   }
 
   .gameTitle {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 0.4rem;
     min-height: 2.2em;
@@ -157,12 +157,14 @@ const style = `
     margin-bottom: 0.6rem;
   }
   .tagIcon {
+    color: var(--ion-color-primary, #718096);
     flex-shrink: 0;
-    font-size: 12px;
+    font-size: 16px;
   }
 
   .gameTags {
-    font-size: 0.7rem;
+    color: var(--ion-color-primary, #718096);
+    font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -174,12 +176,12 @@ const style = `
     gap: 0.3rem;
     margin-top: auto;
     padding-top: 0.4rem;
-    color: var(--ion-color-medium, #718096);
-    font-size: 0.75rem;
+    color: var(--ion-color-primary, #718096);
+    font-size: 1rem;
   }
   .starIcon {
     color: var(--ion-color-primary, #4D7CFF);
-    font-size: 12px;
+    font-size: 16px;
   }
 
   .priceSection {
@@ -209,7 +211,7 @@ const style = `
     color: var(--ion-text-color, #fff);
   }
   .originalPrice {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     color: var(--ion-color-medium, #718096);
     text-decoration: line-through;
   }
@@ -220,7 +222,7 @@ const style = `
     color: var(--ion-color-danger-contrast, #fff);
     padding: 4px 8px;
     border-radius: 6px;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     font-weight: bold;
     white-space: nowrap;
     align-self: flex-end;
@@ -262,12 +264,14 @@ const style = `
     }
 
     .gameTags {
-      font-size: 0.8rem;
+      color: var(--ion-color-primary, #718096);
+      font-size: 0.9rem;
     }
 
     .ratingInfo {
+      color: var(--ion-color-primary, #718096);
       gap: 0.4rem;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
     .starIcon {
       font-size: 14px;
@@ -281,11 +285,11 @@ const style = `
       font-size: 1.2rem;
     }
     .originalPrice {
-      font-size: 0.8rem;
+      font-size: 0.9 rem;
     }
 
     .discountBadge {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       padding: 5px 10px;
     }
   }
@@ -309,7 +313,8 @@ const style = `
     }
 
     .gameTitle {
-      font-size: 0.8rem;
+      text-transform: uppercase;
+      font-size: 1.2rem;
       min-height: 1.8em;
     }
 
@@ -318,11 +323,11 @@ const style = `
     }
 
     .gamePrice {
-      font-size: 0.9rem;
+      font-size: 1.2rem;
     }
 
     .discountBadge {
-      font-size: 0.7rem;
+      font-size: 0.9rem;
       padding: 3px 6px;
     }
   }

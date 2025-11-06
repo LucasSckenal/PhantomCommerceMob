@@ -133,7 +133,19 @@ Abra no navegador:
 ```
 http://localhost:8100
 ```
+---
 
+## Executando o Projeto no Android Studio
+
+```bash
+ionic build
+ionic cap sync android //ou ionic cap add android se foi a primeira vez
+ionic cap open android
+```
+
+E aí é só clicar em "Run" e desfrutar!
+
+OBS.: Se quiser usar IOS, é só modificar os comandos para usar "ios"
 ---
 
 ## Contribuição

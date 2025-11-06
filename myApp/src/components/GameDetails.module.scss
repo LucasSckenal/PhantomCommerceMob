@@ -11,17 +11,17 @@
 }
 
 .sectionTitle {
- font-size: 1.4rem;
+ font-size: 1.4rem !important;
  font-weight: 600;
  color: var(--ion-text-color, #fff);
- margin-bottom: 1rem;
+ margin-bottom: 1rem !important;
  border-bottom: 2px solid var(--ion-color-primary, #4D7CFF);
  padding-bottom: 0.4rem;
  width: fit-content;
 }
 
 .gameDescription {
- font-size: 1rem;
+ font-size: 1rem !important;
  color: var(--ion-text-color, #fff);
  line-height: 1.7;
  text-align: justify;
@@ -43,7 +43,7 @@
 }
 
 .infoLabel {
- font-size: 0.9rem;
+ font-size: 1.2rem !important;
  font-weight: bold;
  color: var(--ion-color-medium, #a0aec0);
  margin-bottom: 0.2rem;
@@ -51,8 +51,8 @@
 
 .infoValue {
  color: var(--ion-text-color, #fff);
- font-weight: 500;
- font-size: 1rem;
+ font-weight: 700;
+ font-size: 1.2rem !important;
 }
 
 @media (min-width: 768px) {

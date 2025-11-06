@@ -18,7 +18,6 @@ import {
   desktopOutline,
 } from "ionicons/icons";
 
-// --- Estilos CSS-in-JS CORRIGIDOS ---
 const style = `
   .heroSlider {
     height: 65vh;
@@ -33,75 +32,60 @@ const style = `
     display: flex;
     align-items: center;
     background-size: cover;
-    background-position: center center; /* CORREÇÃO: Centraliza a imagem */
+    background-position: center center;
     background-repeat: no-repeat;
     padding: 2rem 3rem;
     color: var(--ion-text-color-contrast, #fff);
     position: relative;
   }
 
-  /* NOVO: Container para garantir que a imagem cubra toda a área */
-  .heroSlide::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    z-index: 0;
-  }
-
-  .heroOverlay {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background-image: radial-gradient(circle, transparent 45%, black 80%),
-                      linear-gradient(to right, rgba(15, 20, 36, 0.7) 20%, transparent 80%);
-    background-color: rgba(15, 20, 36, 0.4);
-  }
-
+  /* Overlay escuro agora aplicado APENAS ao texto */
   .heroContent {
     position: relative;
     z-index: 2;
     max-width: 45%;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    padding-left: 3rem;
+    gap: 0.8rem;
+    padding: 2rem 2.5rem;
+    background: rgba(10, 15, 30, 0.65);
+    backdrop-filter: blur(6px);
+    border-radius: 16px;
     text-align: left;
   }
 
   .heroTitle {
-    font-size: 3.5rem;
+    font-size: 3.2rem;
     font-weight: 700;
     line-height: 1.1;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    text-shadow: 0 3px 10px rgba(0,0,0,0.7);
   }
 
-  .heroSubtitle { font-size: 1.2rem; font-weight: bold; }
+  .heroSubtitle { 
+    font-size: 1.2rem; 
+    font-weight: bold; 
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  }
+
   .heroDescription { 
-    font-size: 0.95rem; 
+    font-size: 1.1rem; 
     line-height: 1.6; 
     max-width: 480px; 
-    
-    /* Adiciona clamp para limitar a 3 linhas */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
   }
 
   .heroInfoBar {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
     flex-wrap: wrap;
   }
-  
+
   .infoItem, .platformIconsHero {
     display: flex;
     gap: 0.5rem;
@@ -111,10 +95,12 @@ const style = `
     border-radius: 16px;
     font-size: 0.9rem;
   }
+
   .infoItem ion-icon { 
     color: var(--ion-color-primary, #4D7CFF); 
     font-size: 16px;
   }
+
   .platformIconsHero ion-icon {
     font-size: 16px;
   }
@@ -122,7 +108,13 @@ const style = `
   .heroPriceSection {
     margin-top: 0.5rem;
   }
-  .currentPrice { font-size: 2.2rem; font-weight: 700; }
+
+  .currentPrice { 
+    font-size: 2rem; 
+    font-weight: 700; 
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  }
+
   .originalPrice { 
     font-size: 1rem;
     color: var(--ion-color-medium);
@@ -132,41 +124,26 @@ const style = `
 
   .heroActions {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.2rem;
     margin-top: 0.5rem;
   }
 
   .heroButtonPrimary {
     --background: var(--ion-color-primary, #2D5BFF);
-    --background-hover: var(--ion-color-primary-shade, #2951e0);
-    --color: var(--ion-text-color-contrast, #fff);
+    --color: #fff;
     --border-radius: 8px;
-    --padding-start: 2.5rem;
-    --padding-end: 2.5rem;
-    --padding-top: 0.9rem;
-    --padding-bottom: 0.9rem;
-    font-size: 1rem;
-    font-weight: 600;
-    text-transform: none;
-  }
-
-  .heroButtonSecondary {
-    --background: rgba(15, 20, 36, 0.8);
-    --color: var(--ion-text-color-contrast, #fff);
-    --border-color: var(--ion-color-primary, #4D7CFF);
-    --border-width: 1px;
-    --border-style: solid;
-    --border-radius: 8px;
-    --padding-start: 1.5rem;
-    --padding-end: 1.5rem;
+    --padding-start: 2rem;
+    --padding-end: 2rem;
     --padding-top: 0.8rem;
     --padding-bottom: 0.8rem;
     font-size: 1rem;
     font-weight: 600;
     text-transform: none;
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
   }
-  .heroButtonSecondary:hover {
-    --color: var(--ion-color-primary, #4D7CFF);
+
+  .heroButtonPrimary:hover {
+    filter: brightness(1.1);
   }
 
   .heroNavArrow {
@@ -175,56 +152,58 @@ const style = `
     top: 50%;
     transform: translateY(-50%);
     --background: rgba(26, 32, 44, 0.5);
-    --background-hover: var(--ion-color-primary-shade, #2951e0);
     --border-color: var(--ion-color-primary, #4D7CFF);
     --border-width: 1px;
-    --border-style: solid;
     --color: #fff;
     --border-radius: 50%;
     width: 48px;
     height: 48px;
     backdrop-filter: blur(4px);
   }
+
   .heroNavArrow.left { left: 2rem; }
   .heroNavArrow.right { right: 2rem; }
 
   .heroSlider .swiper-pagination {
     bottom: 2rem !important;
   }
+
   .heroSlider .swiper-pagination-bullet {
     background: var(--ion-color-light, #f4f5f8);
     opacity: 0.7;
   }
+
   .heroSlider .swiper-pagination-bullet-active {
     background: var(--ion-color-primary, #4D7CFF);
     opacity: 1;
   }
 
-  /* MUDANÇA: CSS Responsivo para Mobile - CORRIGIDO */
+  /* Responsivo */
   @media (max-width: 768px) {
     .heroSlider {
-      height: 60vh; /* Ajustado para mobile */
+      height: 60vh;
       min-height: 400px;
     }
 
     .heroSlide {
       padding: 1rem;
       align-items: flex-end;
-      background-position: center center; /* Garante centralização no mobile */
+      justify-content: center;
     }
 
     .heroContent {
-      max-width: 100%;
-      padding-left: 0;
-      text-align: center;
+      max-width: 95%;
+      padding: 1rem;
+      margin-bottom: 0.8rem;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 2rem; /* Reduzido */
+      text-align: center;
+      background: rgba(0,0,0,0.55);
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
     }
 
     .heroTitle {
-      font-size: 2rem; /* Título menor para mobile */
-      line-height: 1.2;
+      font-size: 1.9rem;
     }
 
     .heroSubtitle {
@@ -232,44 +211,24 @@ const style = `
     }
 
     .heroDescription {
-      font-size: 0.8rem;
-      max-width: 95%;
-      -webkit-line-clamp: 2; /* Menos linhas no mobile */
+      font-size: 1.2rem;
+      -webkit-line-clamp: 2;
     }
-    
+
     .heroInfoBar {
       gap: 0.5rem;
       justify-content: center;
     }
 
-    .infoItem, .platformIconsHero {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-    }
-    .infoItem ion-icon, .platformIconsHero ion-icon {
-      font-size: 12px;
-    }
-
-    .heroPriceSection {
-      margin-top: 0.25rem;
-    }
-    .currentPrice {
-      font-size: 1.5rem;
-    }
-
     .heroActions {
-      gap: 0.5rem;
       flex-direction: column;
+      gap: 0.6rem;
       width: 100%;
     }
 
-    .heroButtonPrimary, .heroButtonSecondary {
-      font-size: 0.85rem;
+    .heroButtonPrimary {
       width: 90%;
-      --padding-start: 1rem;
-      --padding-end: 1rem;
-      --padding-top: 0.7rem;
-      --padding-bottom: 0.7rem;
+      font-size: 0.9rem;
     }
 
     .heroNavArrow {
@@ -277,46 +236,13 @@ const style = `
     }
   }
 
-  /* NOVO: Otimização para telas muito pequenas */
   @media (max-width: 480px) {
-    .heroSlider {
-      height: 55vh;
-      min-height: 350px;
-    }
-
     .heroTitle {
-      font-size: 1.7rem;
+      font-size: 1.6rem;
     }
-
-    .heroDescription {
-      -webkit-line-clamp: 2;
-    }
-
-    .heroInfoBar {
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-  }
-
-  /* NOVO: Garantir que a imagem sempre cubra o container */
-  .heroSlide .image-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .heroSlide .image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
   }
 `;
 
-// ... (o resto do código permanece igual)
 const platformIcons: { [key: string]: string } = {
   xbox: logoXbox,
   playstation: logoPlaystation,
@@ -337,31 +263,17 @@ const HomeHeroSlider: React.FC<HomeHeroSliderProps> = ({ games = [] }) => {
   const handlePrev = () => slidesRef.current?.slidePrev();
   const handleNext = () => slidesRef.current?.slideNext();
 
-  const sortedPlatforms = (platforms: string[] = []) => {
-    return [...platforms].sort((a, b) => {
-      const platformA = a.toLowerCase();
-      const platformB = b.toLowerCase();
-      const indexA = platformOrder.indexOf(platformA);
-      const indexB = platformOrder.indexOf(platformB);
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
-      return indexA - indexB;
-    });
-  };
+  const sortedPlatforms = (platforms: string[] = []) =>
+    [...platforms].sort(
+      (a, b) =>
+        platformOrder.indexOf(a.toLowerCase()) -
+        platformOrder.indexOf(b.toLowerCase())
+    );
 
-  // NOVO: Função para garantir que a imagem seja carregada corretamente
-  const getOptimizedImageUrl = (url: string) => {
-    if (!url) return "";
-    // Adiciona parâmetros de otimização se for uma URL do Firebase Storage
-    if (url.includes("firebasestorage.googleapis.com")) {
-      return `${url}?alt=media`;
-    }
-    return url;
-  };
+  const getOptimizedImageUrl = (url: string) =>
+    url?.includes("firebasestorage.googleapis.com") ? `${url}?alt=media` : url;
 
-  if (!games || games.length === 0) {
-    return null;
-  }
+  if (!games || games.length === 0) return null;
 
   return (
     <div style={{ position: "relative" }}>
@@ -369,17 +281,10 @@ const HomeHeroSlider: React.FC<HomeHeroSliderProps> = ({ games = [] }) => {
       <Swiper
         className="heroSlider"
         modules={[Pagination, Autoplay]}
-        autoplay={{
-          delay: 7000,
-          disableOnInteraction: false,
-        }}
-        loop={true}
-        pagination={{
-          clickable: true,
-        }}
-        onSwiper={(swiper) => {
-          slidesRef.current = swiper;
-        }}
+        autoplay={{ delay: 7000, disableOnInteraction: false }}
+        loop
+        pagination={{ clickable: true }}
+        onSwiper={(swiper) => (slidesRef.current = swiper)}
       >
         {games.map((game: any) => {
           const imageUrl = getOptimizedImageUrl(
@@ -390,32 +295,8 @@ const HomeHeroSlider: React.FC<HomeHeroSliderProps> = ({ games = [] }) => {
             <SwiperSlide
               key={game.id}
               className="heroSlide"
-              style={{
-                backgroundImage: `url(${imageUrl})`,
-                // NOVO: Garante que a imagem cubra o container
-                backgroundSize: "cover",
-                backgroundPosition: "center center",
-                backgroundRepeat: "no-repeat",
-              }}
+              style={{ backgroundImage: `url(${imageUrl})` }}
             >
-              {/* NOVO: Container adicional para a imagem como fallback */}
-              <div
-                className="image-container"
-                style={{
-                  backgroundImage: `url(${imageUrl})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center center",
-                  backgroundRepeat: "no-repeat",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  zIndex: 0,
-                }}
-              />
-
-              <div className="heroOverlay"></div>
               <div className="heroContent">
                 <h2 className="heroTitle">{game.title}</h2>
                 <h3 className="heroSubtitle">
@@ -435,8 +316,7 @@ const HomeHeroSlider: React.FC<HomeHeroSliderProps> = ({ games = [] }) => {
                       <IonIcon
                         key={platform}
                         icon={
-                          platformIcons[platform.toLowerCase()] ||
-                          desktopOutline
+                          platformIcons[platform.toLowerCase()] || desktopOutline
                         }
                         title={platform}
                       />

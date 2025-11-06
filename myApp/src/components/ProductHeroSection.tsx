@@ -246,7 +246,7 @@ const ProductHeroSection: React.FC<ProductHeroSectionProps> = ({ game }) => {
 
                 <IonButton
                   expand="block"
-                  color="secondary"
+                  color="primary"
                   fill="outline"
                   className="wishlist-button"
                 >
