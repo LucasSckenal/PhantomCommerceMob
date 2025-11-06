@@ -36,8 +36,9 @@
 ## Visão Geral
 
 O **PhantomCommerce** é uma plataforma de e‑commerce especializada em jogos, agora refatorada como um aplicativo móvel híbrido usando o framework Ionic. Permite aos usuários navegar por catálogos de jogos, visualizar detalhes, adicionar ao carrinho e autenticar-se, tudo uma experiência otimizada para mobile.
-
-![Exemplo da página de produto](phantomcommercemob/public/example_productpage.png)
+<div align="center">
+<img src="./myApp/public/example_productpage.png" alt="Exemplo da página de produto" height="500"/>
+</div>
 
 ---
 
@@ -135,17 +136,66 @@ http://localhost:8100
 ```
 ---
 
-## Executando o Projeto no Android Studio
+## 🚀 Executando no Android Studio
 
-```bash
-ionic build
-ionic cap sync android //ou ionic cap add android se foi a primeira vez
-ionic cap open android
-```
+Siga os passos abaixo para rodar o projeto no seu emulador ou dispositivo Android.
 
-E aí é só clicar em "Run" e desfrutar!
+1.  **Faça o build do projeto web:**
+    ```bash
+    ionic build
+    ```
 
-OBS.: Se quiser usar IOS, é só modificar os comandos para usar "ios"
+2.  **Sincronize o build com o projeto Android:**
+    * Se for a **primeira vez** que você gera o projeto Android, use:
+        ```bash
+        ionic cap add android
+        ```
+    * Para **atualizar um projeto existente** após mudanças, use:
+        ```bash
+        ionic cap sync android
+        ```
+
+3.  **Abra o Android Studio:**
+    ```bash
+    ionic cap open android
+    ```
+
+4.  **Execute o App:**
+    * Aguarde o Android Studio sincronizar o Gradle.
+    * Selecione um dispositivo (emulador ou físico).
+    * Clique no botão **Run (▶)**.
+---
+
+## 🍏 Executando no iOS (Xcode)
+
+O processo para iOS é quase idêntico.
+
+> **Importante:** Você deve estar em um computador com **macOS** para compilar projetos iOS.
+
+1.  **Faça o build:**
+    ```bash
+    ionic build
+    ```
+
+2.  **Sincronize com o iOS:**
+    * Primeira vez:
+        ```bash
+        ionic cap add ios
+        ```
+    * Para atualizar:
+        ```bash
+        ionic cap sync ios
+        ```
+
+3.  **Abra o Xcode:**
+    ```bash
+    ionic cap open ios
+    ```
+
+4.  **Execute o App:**
+    * No Xcode, selecione um simulador ou dispositivo físico.
+    * Clique no botão **Run (▶)**.
+
 ---
 
 ## Contribuição
